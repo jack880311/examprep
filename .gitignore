@@ -7,6 +7,9 @@
 # OpenCode local session data
 .opencode/
 
+# Playwright MCP temp files
+.playwright-mcp/
+
 # Backup files
 *.bak
 *.orig

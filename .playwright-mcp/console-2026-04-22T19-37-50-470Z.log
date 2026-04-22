@@ -1,2 +1,0 @@
-[      71ms] [LOG] ✓ 已載入 336 題詳解 (外部檔案) @ http://localhost:8765/index.html:854
-[      76ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8765/favicon.ico:0
