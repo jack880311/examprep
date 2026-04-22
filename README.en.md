@@ -255,7 +255,7 @@ The system auto-splits all questions into sessions. Click a session card to star
 
 ## 📝 Notes & Retry Mode
 
-**Notes**: Expand "📝 我的筆記" under any question. Auto-saves 500ms after you stop typing. Included in progress JSON exports.
+**Notes**: Expand "📝 我的筆記" under any question. Auto-saves 500ms after you stop typing. Included in progress JSON exports. The intended use is to capture your **in-the-moment reasoning** — e.g. "why C over B" or "not sure about this concept, revisit later" — so when you come back to retry, the note tells you exactly why you bookmarked it in the first place.
 
 **Retry Mode** (status filter):
 - **⭐ Bookmarked (Retry)**: Shows bookmarked questions with answers hidden
@@ -311,5 +311,5 @@ The default GCP ACE question bank is sourced from [ExamTopics](https://www.examt
 | 2.2 | 2026-04-23 | Exam session cards show real best score + attempt count + last date; progress export merged into single JSON (includes AI cache, exam history) |
 | 2.1 | 2026-04-22 | AI two-button layout, custom AI exam context, custom exam time/question count, formatted community discussion, bilingual README |
 | 2.0 | 2026-04-22 | Notes panel, retry mode, AI explanations, mock exam (6 sessions) |
-| 1.1 | 2026-04-22 | Added 51 questions (total 363), fixed HTML injection bug |
-| 1.0 | 2026-04-21 | Initial release, 285 questions |
+| 1.1 | 2026-04-22 | Expanded question bank, fixed HTML injection bug |
+| 1.0 | 2026-04-21 | Initial release |
