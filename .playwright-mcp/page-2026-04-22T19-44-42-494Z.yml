@@ -1,0 +1,391 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - heading "🎓 GCP Associate Cloud Engineer (ACE) 題庫" [level=1] [ref=e4]
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: 📚 總題數：
+        - generic [ref=e8]: "336"
+      - generic [ref=e9]:
+        - generic [ref=e10]: ✅ 已完成：
+        - generic [ref=e11]: "2"
+      - generic [ref=e12]:
+        - generic [ref=e13]: ⭐ 已標記：
+        - generic [ref=e14]: "0"
+  - generic [ref=e15]:
+    - textbox "🔍 搜尋題目內容..." [ref=e16]
+    - combobox [ref=e17] [cursor=pointer]:
+      - option "所有主題" [selected]
+      - option "Topic 1"
+      - option "Topic 2"
+      - option "Topic 3"
+      - option "Topic 4"
+      - option "Topic 5"
+      - option "Topic 6"
+      - option "Topic 7"
+      - option "Topic 8"
+      - option "Topic 9"
+      - option "Topic 10"
+      - option "Topic 11"
+      - option "Topic 12"
+      - option "Topic 13"
+      - option "Topic 14"
+      - option "Topic 15"
+      - option "Topic 16"
+      - option "Topic 17"
+      - option "Topic 18"
+      - option "Topic 19"
+      - option "Topic 20"
+      - option "Topic 21"
+      - option "Topic 22"
+      - option "Topic 23"
+      - option "Topic 24"
+      - option "Topic 25"
+      - option "Topic 26"
+      - option "Topic 27"
+      - option "Topic 28"
+      - option "Topic 29"
+      - option "Topic 30"
+      - option "Topic 31"
+      - option "Topic 32"
+      - option "Topic 33"
+      - option "Topic 34"
+      - option "Topic 35"
+      - option "Topic 36"
+      - option "Topic 37"
+      - option "Topic 38"
+      - option "Topic 39"
+      - option "Topic 40"
+      - option "Topic 41"
+      - option "Topic 42"
+      - option "Topic 43"
+      - option "Topic 44"
+      - option "Topic 45"
+      - option "Topic 46"
+      - option "Topic 47"
+      - option "Topic 48"
+      - option "Topic 49"
+      - option "Topic 50"
+      - option "Topic 51"
+      - option "Topic 52"
+      - option "Topic 53"
+      - option "Topic 54"
+      - option "Topic 55"
+      - option "Topic 56"
+      - option "Topic 57"
+    - combobox [ref=e18] [cursor=pointer]:
+      - option "全部狀態" [selected]
+      - option "已完成"
+      - option "已標記"
+      - option "未完成"
+      - option "⭐ 已標記（重考）"
+      - option "❌ 答錯（重考）"
+    - button "跳至題號" [ref=e19] [cursor=pointer]
+    - button "重置進度" [ref=e20] [cursor=pointer]
+    - button "📥 下載進度" [ref=e21] [cursor=pointer]
+    - button "📤 匯入進度" [ref=e22] [cursor=pointer]
+    - button "🎯 模擬考試" [ref=e23] [cursor=pointer]
+  - generic [ref=e24]:
+    - generic [ref=e25]: 🤖 AI 考試情境：
+    - textbox "GCP Associate Cloud Engineer (ACE)" [ref=e26]
+    - button "儲存" [ref=e27] [cursor=pointer]
+    - generic [ref=e28]: （AI 詳解 prompt 會帶入此情境，預設為 GCP ACE）
+  - generic [ref=e29]:
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - text: "T1-Q246 | Topic 1 | #1"
+          - generic [ref=e337]: "正解: C"
+        - button "☆" [ref=e34] [cursor=pointer]
+      - generic [ref=e35]: Every employee of your company has a Google account. Your operational team needs to manage a large number of instances on Compute Engine. Each member of this team needs only administrative access to the servers. Your security team wants to ensure that the deployment of credentials is operationally efficient and must be able to determine who accessed a given instance. What should you do?
+      - generic [ref=e36]:
+        - generic [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: A.
+          - generic [ref=e39]: Generate a new SSH key pair. Give the private key to each member of your team. Configure the public key in the metadata of each instance.
+        - generic [ref=e40] [cursor=pointer]:
+          - generic [ref=e41]: B.
+          - generic [ref=e42]: Ask each member of the team to generate a new SSH key pair and to send you their public key. Use a configuration management tool to deploy those keys on each instance.
+        - generic [ref=e43] [cursor=pointer]:
+          - generic [ref=e44]: C.
+          - generic [ref=e45]: Ask each member of the team to generate a new SSH key pair and to add the public key to their Google account. Grant the ג€compute.osAdminLoginג€ role to the Google group corresponding to this team.
+        - generic [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: D.
+          - generic [ref=e48]: Generate a new SSH key pair. Give the private key to each member of your team. Configure the public key as a project-wide public SSH key in your Cloud Platform project and allow project-wide public SSH keys on each instance.
+      - group [ref=e50]:
+        - generic "📝 我的筆記" [ref=e51] [cursor=pointer]
+      - group [ref=e52]:
+        - generic "📖 我的詳解" [ref=e53] [cursor=pointer]
+      - group [ref=e54]:
+        - generic "💬 ExamTopics 社群討論" [ref=e55] [cursor=pointer]
+      - group [ref=e56]:
+        - generic "🔗 原始連結" [ref=e57] [cursor=pointer]
+      - group [ref=e58]:
+        - generic "🤖 AI 進階詳解" [ref=e59] [cursor=pointer]
+    - generic [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - text: "T1-Q247 | Topic 1 | #2"
+          - generic [ref=e338]: "正解: A"
+        - button "☆" [ref=e64] [cursor=pointer]
+      - generic [ref=e65]: You have a development project with appropriate IAM roles defined. You are creating a production project and want to have the same IAM roles on the new project, using the fewest possible steps. What should you do?
+      - generic [ref=e66]:
+        - generic [ref=e67] [cursor=pointer]:
+          - generic [ref=e68]: A.
+          - generic [ref=e69]: Use gcloud iam roles copy and specify the production project as the destination project.
+        - generic [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]: B.
+          - generic [ref=e72]: Use gcloud iam roles copy and specify your organization as the destination organization.
+        - generic [ref=e73] [cursor=pointer]:
+          - generic [ref=e74]: C.
+          - generic [ref=e75]: In the Google Cloud Platform Console, use the 'create role from role' functionality.
+        - generic [ref=e76] [cursor=pointer]:
+          - generic [ref=e77]: D.
+          - generic [ref=e78]: In the Google Cloud Platform Console, use the 'create role' functionality and select all applicable permissions.
+      - group [ref=e80]:
+        - generic "📝 我的筆記" [ref=e81] [cursor=pointer]
+      - group [ref=e82]:
+        - generic "📖 我的詳解" [ref=e83] [cursor=pointer]
+      - group [ref=e84]:
+        - generic "💬 ExamTopics 社群討論" [ref=e85] [cursor=pointer]
+      - group [ref=e86]:
+        - generic "🔗 原始連結" [ref=e87] [cursor=pointer]
+      - group [ref=e88]:
+        - generic "🤖 AI 進階詳解" [ref=e89] [cursor=pointer]
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]: "T1-Q248 | Topic 1 | #3"
+        - button "☆" [ref=e94] [cursor=pointer]
+      - generic [ref=e95]: Your organization has strict requirements to control access to Google Cloud projects. You need to enable your Site Reliability Engineers (SREs) to approve requests from the Google Cloud support team when an SRE opens a support case. You want to follow Google-recommended practices. What should you do?
+      - generic [ref=e96]:
+        - generic [ref=e97] [cursor=pointer]:
+          - generic [ref=e98]: A.
+          - generic [ref=e99]: Add your SREs to roles/iam.roleAdmin role.
+        - generic [ref=e100] [cursor=pointer]:
+          - generic [ref=e101]: B.
+          - generic [ref=e102]: Add your SREs to roles/accessapproval.approver role.
+        - generic [ref=e103] [cursor=pointer]:
+          - generic [ref=e104]: C.
+          - generic [ref=e105]: Add your SREs to a group and then add this group to roles/iam.roleAdmin.role.
+        - generic [ref=e106] [cursor=pointer]:
+          - generic [ref=e107]: D.
+          - generic [ref=e108]: Add your SREs to a group and then add this group to roles/accessapproval.approver role.
+      - button "顯示答案" [ref=e109] [cursor=pointer]
+      - group [ref=e110]:
+        - generic "📝 我的筆記" [ref=e111] [cursor=pointer]
+      - group [ref=e112]:
+        - generic "📖 我的詳解" [ref=e113] [cursor=pointer]
+      - group [ref=e114]:
+        - generic "💬 ExamTopics 社群討論" [ref=e115] [cursor=pointer]
+      - group [ref=e116]:
+        - generic "🔗 原始連結" [ref=e117] [cursor=pointer]
+      - group [ref=e118]:
+        - generic "🤖 AI 進階詳解" [ref=e119] [cursor=pointer]
+    - generic [ref=e120]:
+      - generic [ref=e121]:
+        - generic [ref=e122]: "T1-Q249 | Topic 1 | #4"
+        - button "☆" [ref=e124] [cursor=pointer]
+      - generic [ref=e125]: You need to host an application on a Compute Engine instance in a project shared with other teams. You want to prevent the other teams from accidentally causing downtime on that application. Which feature should you use?
+      - generic [ref=e126]:
+        - generic [ref=e127] [cursor=pointer]:
+          - generic [ref=e128]: A.
+          - generic [ref=e129]: Use a Shielded VM.
+        - generic [ref=e130] [cursor=pointer]:
+          - generic [ref=e131]: B.
+          - generic [ref=e132]: Use a Preemptible VM.
+        - generic [ref=e133] [cursor=pointer]:
+          - generic [ref=e134]: C.
+          - generic [ref=e135]: Use a sole-tenant node.
+        - generic [ref=e136] [cursor=pointer]:
+          - generic [ref=e137]: D.
+          - generic [ref=e138]: Enable deletion protection on the instance.
+      - button "顯示答案" [ref=e139] [cursor=pointer]
+      - group [ref=e140]:
+        - generic "📝 我的筆記" [ref=e141] [cursor=pointer]
+      - group [ref=e142]:
+        - generic "📖 我的詳解" [ref=e143] [cursor=pointer]
+      - group [ref=e144]:
+        - generic "💬 ExamTopics 社群討論" [ref=e145] [cursor=pointer]
+      - group [ref=e146]:
+        - generic "🔗 原始連結" [ref=e147] [cursor=pointer]
+      - group [ref=e148]:
+        - generic "🤖 AI 進階詳解" [ref=e149] [cursor=pointer]
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - generic [ref=e152]: "T1-Q250 | Topic 1 | #5"
+        - button "☆" [ref=e154] [cursor=pointer]
+      - generic [ref=e155]: Your organization needs to grant users access to query datasets in BigQuery but prevent them from accidentally deleting the datasets. You want a solution that follows Google-recommended practices. What should you do?
+      - generic [ref=e156]:
+        - generic [ref=e157] [cursor=pointer]:
+          - generic [ref=e158]: A.
+          - generic [ref=e159]: Add users to roles/bigquery user role only, instead of roles/bigquery dataOwner.
+        - generic [ref=e160] [cursor=pointer]:
+          - generic [ref=e161]: B.
+          - generic [ref=e162]: Add users to roles/bigquery dataEditor role only, instead of roles/bigquery dataOwner.
+        - generic [ref=e163] [cursor=pointer]:
+          - generic [ref=e164]: C.
+          - generic [ref=e165]: Create a custom role by removing delete permissions, and add users to that role only.
+        - generic [ref=e166] [cursor=pointer]:
+          - generic [ref=e167]: D.
+          - generic [ref=e168]: Create a custom role by removing delete permissions. Add users to the group, and then add the group to the custom role.
+      - button "顯示答案" [ref=e169] [cursor=pointer]
+      - group [ref=e170]:
+        - generic "📝 我的筆記" [ref=e171] [cursor=pointer]
+      - group [ref=e172]:
+        - generic "📖 我的詳解" [ref=e173] [cursor=pointer]
+      - group [ref=e174]:
+        - generic "💬 ExamTopics 社群討論" [ref=e175] [cursor=pointer]
+      - group [ref=e176]:
+        - generic "🔗 原始連結" [ref=e177] [cursor=pointer]
+      - group [ref=e178]:
+        - generic "🤖 AI 進階詳解" [ref=e179] [cursor=pointer]
+    - generic [ref=e180]:
+      - generic [ref=e181]:
+        - generic [ref=e182]: "T2-Q46 | Topic 2 | #6"
+        - button "☆" [ref=e184] [cursor=pointer]
+      - generic [ref=e185]: You have a developer laptop with the Cloud SDK installed on Ubuntu. The Cloud SDK was installed from the Google Cloud Ubuntu package repository. You want to test your application locally on your laptop with Cloud Datastore. What should you do?
+      - generic [ref=e186]:
+        - generic [ref=e187] [cursor=pointer]:
+          - generic [ref=e188]: A.
+          - generic [ref=e189]: Export Cloud Datastore data using gcloud datastore export.
+        - generic [ref=e190] [cursor=pointer]:
+          - generic [ref=e191]: B.
+          - generic [ref=e192]: Create a Cloud Datastore index using gcloud datastore indexes create.
+        - generic [ref=e193] [cursor=pointer]:
+          - generic [ref=e194]: C.
+          - generic [ref=e195]: Install the google-cloud-sdk-datastore-emulator component using the apt get install command.
+        - generic [ref=e196] [cursor=pointer]:
+          - generic [ref=e197]: D.
+          - generic [ref=e198]: Install the cloud-datastore-emulator component using the gcloud components install command.
+      - button "顯示答案" [ref=e199] [cursor=pointer]
+      - group [ref=e200]:
+        - generic "📝 我的筆記" [ref=e201] [cursor=pointer]
+      - group [ref=e202]:
+        - generic "📖 我的詳解" [ref=e203] [cursor=pointer]
+      - group [ref=e204]:
+        - generic "💬 ExamTopics 社群討論" [ref=e205] [cursor=pointer]
+      - group [ref=e206]:
+        - generic "🔗 原始連結" [ref=e207] [cursor=pointer]
+      - group [ref=e208]:
+        - generic "🤖 AI 進階詳解" [ref=e209] [cursor=pointer]
+    - generic [ref=e210]:
+      - generic [ref=e211]:
+        - generic [ref=e212]: "T2-Q47 | Topic 2 | #7"
+        - button "☆" [ref=e214] [cursor=pointer]
+      - generic [ref=e215]: Your company set up a complex organizational structure on Google Cloud. The structure includes hundreds of folders and projects. Only a few team members should be able to view the hierarchical structure. You need to assign minimum permissions to these team members, and you want to follow Google-recommended practices. What should you do?
+      - generic [ref=e216]:
+        - generic [ref=e217] [cursor=pointer]:
+          - generic [ref=e218]: A.
+          - generic [ref=e219]: Add the users to roles/browser role.
+        - generic [ref=e220] [cursor=pointer]:
+          - generic [ref=e221]: B.
+          - generic [ref=e222]: Add the users to roles/iam.roleViewer role.
+        - generic [ref=e223] [cursor=pointer]:
+          - generic [ref=e224]: C.
+          - generic [ref=e225]: Add the users to a group, and add this group to roles/browser.
+        - generic [ref=e226] [cursor=pointer]:
+          - generic [ref=e227]: D.
+          - generic [ref=e228]: Add the users to a group, and add this group to roles/iam.roleViewer role.
+      - button "顯示答案" [ref=e229] [cursor=pointer]
+      - group [ref=e230]:
+        - generic "📝 我的筆記" [ref=e231] [cursor=pointer]
+      - group [ref=e232]:
+        - generic "📖 我的詳解" [ref=e233] [cursor=pointer]
+      - group [ref=e234]:
+        - generic "💬 ExamTopics 社群討論" [ref=e235] [cursor=pointer]
+      - group [ref=e236]:
+        - generic "🔗 原始連結" [ref=e237] [cursor=pointer]
+      - group [ref=e238]:
+        - generic "🤖 AI 進階詳解" [ref=e239] [cursor=pointer]
+    - generic [ref=e240]:
+      - generic [ref=e241]:
+        - generic [ref=e242]: "T2-Q48 | Topic 2 | #8"
+        - button "☆" [ref=e244] [cursor=pointer]
+      - generic [ref=e245]: Your company has a single sign-on (SSO) identity provider that supports Security Assertion Markup Language (SAML) integration with service providers. Your company has users in Cloud Identity. You would like users to authenticate using your company's SSO provider. What should you do?
+      - generic [ref=e246]:
+        - generic [ref=e247] [cursor=pointer]:
+          - generic [ref=e248]: A.
+          - generic [ref=e249]: In Cloud Identity, set up SSO with Google as an identity provider to access custom SAML apps.
+        - generic [ref=e250] [cursor=pointer]:
+          - generic [ref=e251]: B.
+          - generic [ref=e252]: In Cloud Identity, set up SSO with a third-party identity provider with Google as a service provider.
+        - generic [ref=e253] [cursor=pointer]:
+          - generic [ref=e254]: C.
+          - generic [ref=e255]: Obtain OAuth 2.0 credentials, configure the user consent screen, and set up OAuth 2.0 for Mobile & Desktop Apps.
+        - generic [ref=e256] [cursor=pointer]:
+          - generic [ref=e257]: D.
+          - generic [ref=e258]: Obtain OAuth 2.0 credentials, configure the user consent screen, and set up OAuth 2.0 for Web Server Applications.
+      - button "顯示答案" [ref=e259] [cursor=pointer]
+      - group [ref=e260]:
+        - generic "📝 我的筆記" [ref=e261] [cursor=pointer]
+      - group [ref=e262]:
+        - generic "📖 我的詳解" [ref=e263] [cursor=pointer]
+      - group [ref=e264]:
+        - generic "💬 ExamTopics 社群討論" [ref=e265] [cursor=pointer]
+      - group [ref=e266]:
+        - generic "🔗 原始連結" [ref=e267] [cursor=pointer]
+      - group [ref=e268]:
+        - generic "🤖 AI 進階詳解" [ref=e269] [cursor=pointer]
+    - generic [ref=e270]:
+      - generic [ref=e271]:
+        - generic [ref=e272]: "T2-Q49 | Topic 2 | #9"
+        - button "☆" [ref=e274] [cursor=pointer]
+      - generic [ref=e275]: Your organization has a dedicated person who creates and manages all service accounts for Google Cloud projects. You need to assign this person the minimum role for projects. What should you do?
+      - generic [ref=e276]:
+        - generic [ref=e277] [cursor=pointer]:
+          - generic [ref=e278]: A.
+          - generic [ref=e279]: Add the user to roles/iam.roleAdmin role.
+        - generic [ref=e280] [cursor=pointer]:
+          - generic [ref=e281]: B.
+          - generic [ref=e282]: Add the user to roles/iam.securityAdmin role.
+        - generic [ref=e283] [cursor=pointer]:
+          - generic [ref=e284]: C.
+          - generic [ref=e285]: Add the user to roles/iam.serviceAccountUser role.
+        - generic [ref=e286] [cursor=pointer]:
+          - generic [ref=e287]: D.
+          - generic [ref=e288]: Add the user to roles/iam.serviceAccountAdmin role.
+      - button "顯示答案" [ref=e289] [cursor=pointer]
+      - group [ref=e290]:
+        - generic "📝 我的筆記" [ref=e291] [cursor=pointer]
+      - group [ref=e292]:
+        - generic "📖 我的詳解" [ref=e293] [cursor=pointer]
+      - group [ref=e294]:
+        - generic "💬 ExamTopics 社群討論" [ref=e295] [cursor=pointer]
+      - group [ref=e296]:
+        - generic "🔗 原始連結" [ref=e297] [cursor=pointer]
+      - group [ref=e298]:
+        - generic "🤖 AI 進階詳解" [ref=e299] [cursor=pointer]
+    - generic [ref=e300]:
+      - generic [ref=e301]:
+        - generic [ref=e302]: "T2-Q50 | Topic 2 | #10"
+        - button "☆" [ref=e304] [cursor=pointer]
+      - generic [ref=e305]: You are building an archival solution for your data warehouse and have selected Cloud Storage to archive your data. Your users need to be able to access this archived data once a quarter for some regulatory requirements. You want to select a cost-efficient option. Which storage option should you use?
+      - generic [ref=e306]:
+        - generic [ref=e307] [cursor=pointer]:
+          - generic [ref=e308]: A.
+          - generic [ref=e309]: Cold Storage
+        - generic [ref=e310] [cursor=pointer]:
+          - generic [ref=e311]: B.
+          - generic [ref=e312]: Nearline Storage
+        - generic [ref=e313] [cursor=pointer]:
+          - generic [ref=e314]: C.
+          - generic [ref=e315]: Regional Storage
+        - generic [ref=e316] [cursor=pointer]:
+          - generic [ref=e317]: D.
+          - generic [ref=e318]: Multi-Regional Storage
+      - button "顯示答案" [ref=e319] [cursor=pointer]
+      - group [ref=e320]:
+        - generic "📝 我的筆記" [ref=e321] [cursor=pointer]
+      - group [ref=e322]:
+        - generic "📖 我的詳解" [ref=e323] [cursor=pointer]
+      - group [ref=e324]:
+        - generic "💬 ExamTopics 社群討論" [ref=e325] [cursor=pointer]
+      - group [ref=e326]:
+        - generic "🔗 原始連結" [ref=e327] [cursor=pointer]
+      - group [ref=e328]:
+        - generic "🤖 AI 進階詳解" [ref=e329] [cursor=pointer]
+  - generic [ref=e330]:
+    - button "1" [ref=e331] [cursor=pointer]
+    - button "2" [ref=e332] [cursor=pointer]
+    - button "3" [ref=e333] [cursor=pointer]
+    - generic [ref=e334]: ...
+    - button "34" [ref=e335] [cursor=pointer]
+    - button "下一頁 »" [ref=e336] [cursor=pointer]

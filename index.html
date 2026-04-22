@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP ACE 題庫練習系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .question-list {
+            padding: 30px;
+        }
+
+        .question-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .question-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-id {
+            font-size: 0.9em;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .question-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bookmark-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .bookmark-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .bookmark-btn.active {
+            color: #ffc107;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #212529;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            gap: 10px;
+        }
+
+        .option:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .option.selected {
+            background: #e7f3ff;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .option-label {
+            font-weight: 700;
+            min-width: 30px;
+        }
+
+        details {
+            margin-top: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #495057;
+            padding: 5px;
+            user-select: none;
+        }
+
+        summary:hover {
+            color: #667eea;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            line-height: 1.8;
+            color: #212529;
+        }
+
+        .explanation h4 {
+            color: #667eea;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .explanation ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .explanation li {
+            margin-bottom: 5px;
+        }
+
+        .answer-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .multi-answer-badge {
+            background: #17a2b8;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 30px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            padding: 8px 16px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .page-btn:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 30px;
+            color: #6c757d;
+        }
+
+        .no-results h2 {
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 30px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .stats {
+                gap: 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .link {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .comments-raw {
+            font-size: 0.9em;
+            color: #6c757d;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .comments-list {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 4px 0;
+        }
+        .comment-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 13px;
+            background: #fafafa;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .comment-username {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 4px;
+            font-size: 12px;
+            letter-spacing: 0.02em;
+        }
+        .comment-content {
+            color: #495057;
+            word-break: break-word;
+        }
+        .comment-answer-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            border-radius: 4px;
+            padding: 1px 7px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+
+        /* 筆記欄 */
+        .note-textarea {
+            width: 100%;
+            min-height: 70px;
+            padding: 10px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.2s;
+            color: #495057;
+            background: #fffef8;
+        }
+        .note-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+        }
+        .note-textarea::placeholder { color: #adb5bd; }
+        .note-indicator { color: #667eea; font-size: 11px; margin-left: 6px; vertical-align: middle; }
+
+        /* 重考模式橫幅 */
+        .retest-banner {
+            display: none;
+            background: linear-gradient(135deg, #ff9800, #f44336);
+            color: white;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+        }
+        .retest-banner.visible { display: block; }
+
+        /* AI 進階詳解 */
+        .ai-section summary {
+            color: #764ba2;
+            font-weight: 600;
+        }
+        .ai-content {
+            background: linear-gradient(135deg, #f8f4ff 0%, #eef6ff 100%);
+            border: 1px solid #c8a0e8;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+        .btn-ai {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-ai:hover { opacity: 0.85; }
+        .btn-ai:disabled { opacity: 0.5; cursor: default; }
+        .btn-ai-custom {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-ai-custom:hover { opacity: 0.85; }
+        .btn-ai-custom:disabled { opacity: 0.5; cursor: default; }
+        .ai-loading { color: #764ba2; font-style: italic; }
+        .ai-custom-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px 10px;
+            border: 1px solid #38ef7d;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.5;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+            margin-top: 6px;
+        }
+        .ai-custom-textarea:focus { outline: none; border-color: #11998e; box-shadow: 0 0 0 2px rgba(17,153,142,0.15); }
+        .chat-history { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+        .chat-bubble { max-width: 88%; padding: 9px 13px; border-radius: 12px; font-size: 13px; line-height: 1.6; word-break: break-word; }
+        .chat-bubble.user { align-self: flex-end; background: #e8f4fd; border: 1px solid #bee3f8; border-bottom-right-radius: 3px; color: #1a3a5c; }
+        .chat-bubble.user .chat-label { font-size: 11px; color: #5a8ab0; font-weight: 600; margin-bottom: 4px; }
+        .chat-bubble.assistant { align-self: flex-start; background: #f3f0ff; border: 1px solid #d6ccff; border-bottom-left-radius: 3px; color: #2d1b69; }
+        .chat-bubble.assistant .chat-label { font-size: 11px; color: #7c5cbf; font-weight: 600; margin-bottom: 4px; }
+        .chat-clear-btn { font-size: 11px; color: #999; background: none; border: 1px solid #ddd; border-radius: 4px; padding: 2px 8px; cursor: pointer; float: right; margin-bottom: 6px; }
+        .chat-clear-btn:hover { color: #dc3545; border-color: #dc3545; }
+        .ai-section-divider {
+            border: none;
+            border-top: 1px solid #e0d0f0;
+            margin: 14px 0;
+        }
+        /* 模擬考試設定區 */
+        .exam-settings-box {
+            background: #f8f4ff;
+            border: 1px solid #c8a0e8;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .exam-settings-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .exam-settings-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            white-space: nowrap;
+        }
+        .exam-settings-unit {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        .exam-settings-note {
+            width: 100%;
+            margin: 4px 0 0;
+            font-size: 11px;
+            color: #adb5bd;
+        }
+
+        /* ===== 模擬考試 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 620px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+        }
+        .modal-box h2 { margin-bottom: 6px; font-size: 1.4em; }
+        .modal-note { color: #e65100; font-size: 13px; margin-bottom: 18px; background: #fff8e1; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #ff9800; }
+        .session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .session-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            background: white;
+        }
+        .session-card:hover { border-color: #667eea; background: #f5f3ff; transform: translateY(-1px); }
+        .session-card.done { border-color: #28a745; background: #f0fff4; }
+        .session-card.in-progress { border-color: #ff9800; background: #fffbf0; }
+        .session-card h3 { font-size: 15px; margin-bottom: 3px; }
+        .session-card .session-meta { font-size: 12px; color: #6c757d; }
+        .session-card .session-score { font-size: 13px; font-weight: 600; margin-top: 6px; }
+        .session-card .session-score.pass { color: #28a745; }
+        .session-card .session-score.fail { color: #dc3545; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .btn-modal-close {
+            padding: 9px 20px; border: 2px solid #dee2e6; background: white;
+            border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+        }
+        .btn-modal-close:hover { background: #f8f9fa; }
+
+        /* 計時器橫幅 */
+        .exam-timer-bar {
+            display: none;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 12px 24px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .exam-timer-bar.visible { display: flex; }
+        .timer-left { display: flex; align-items: center; gap: 14px; }
+        .timer-session-label { font-size: 13px; opacity: 0.8; }
+        .timer-display {
+            font-size: 26px;
+            font-weight: 700;
+            font-family: monospace;
+            letter-spacing: 3px;
+        }
+        .timer-display.warning { color: #ff9800; }
+        .timer-display.danger { color: #f44336; animation: timerBlink 1s infinite; }
+        @keyframes timerBlink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+        .timer-right { display: flex; align-items: center; gap: 10px; }
+        .btn-submit-exam {
+            background: #28a745; color: white; border: none;
+            padding: 8px 18px; border-radius: 6px;
+            cursor: pointer; font-size: 13px; font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-submit-exam:hover { background: #218838; }
+        .btn-exit-exam {
+            background: transparent; color: #aaa; border: 1px solid #555;
+            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
+        }
+        .btn-exit-exam:hover { background: #333; color: white; }
+
+        /* 成績結果 */
+        .results-header { text-align: center; margin-bottom: 20px; }
+        .results-score { font-size: 52px; font-weight: 700; line-height: 1; }
+        .results-score.pass { color: #28a745; }
+        .results-score.fail { color: #dc3545; }
+        .results-pass-label { font-size: 15px; margin-top: 6px; font-weight: 600; }
+        .results-pass-label.pass { color: #28a745; }
+        .results-pass-label.fail { color: #dc3545; }
+        .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+        .results-stat { background: #f8f9fa; border-radius: 10px; padding: 14px; text-align: center; }
+        .results-stat .val { font-size: 24px; font-weight: 700; }
+        .results-stat .lbl { font-size: 12px; color: #6c757d; margin-top: 4px; }
+        .topic-breakdown { margin-top: 16px; }
+        .topic-breakdown h4 { font-size: 14px; margin-bottom: 10px; color: #495057; }
+        .topic-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 13px; }
+        .topic-bar-bg { flex: 1; background: #e9ecef; border-radius: 4px; height: 8px; overflow: hidden; }
+        .topic-bar-fill { height: 100%; border-radius: 4px; background: #667eea; transition: width 0.3s; }
+        .topic-bar-fill.low { background: #dc3545; }
+        .topic-bar-fill.mid { background: #ff9800; }
+
+        /* 歷史記錄 */
+        .history-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid #dee2e6; }
+        .history-section h4 { font-size: 13px; color: #6c757d; margin-bottom: 10px; }
+        .history-list { font-size: 12px; max-height: 140px; overflow-y: auto; }
+        .history-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0; }
+        .history-row:last-child { border-bottom: none; }
+        .history-row .score { font-weight: 600; }
+        .history-row .score.pass { color: #28a745; }
+        .history-row .score.fail { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="pageTitle">🎓 GCP Associate Cloud Engineer 題庫</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span>📚 總題數：</span>
+                    <span id="totalQuestions">285</span>
+                </div>
+                <div class="stat-item">
+                    <span>✅ 已完成：</span>
+                    <span id="completedQuestions">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>⭐ 已標記：</span>
+                    <span id="bookmarkedQuestions">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜尋題目內容...">
+            <select class="filter-select" id="topicFilter">
+                <option value="">所有主題</option>
+            </select>
+            <select class="filter-select" id="statusFilter">
+                <option value="">全部狀態</option>
+                <option value="completed">已完成</option>
+                <option value="bookmarked">已標記</option>
+                <option value="incomplete">未完成</option>
+                <option value="bookmarked_retest">⭐ 已標記（重考）</option>
+                <option value="wrong_retest">❌ 答錯（重考）</option>
+            </select>
+            <button class="btn btn-primary" onclick="jumpToQuestion()">跳至題號</button>
+            <button class="btn btn-secondary" onclick="resetProgress()">重置進度</button>
+            <button class="btn btn-info" onclick="downloadProgress()">📥 下載進度</button>
+            <button class="btn btn-info" onclick="document.getElementById('importFile').click()">📤 匯入進度</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importProgress(event)">
+            <button class="btn" style="background:#e91e63;color:white;" onclick="openExamPicker()">🎯 模擬考試</button>
+        </div>
+        <div class="controls" style="padding-top:6px; padding-bottom:8px; gap:6px; align-items:center; flex-wrap:wrap;">
+            <label style="font-size:12px; color:#6c757d; white-space:nowrap;">🤖 AI 考試情境：</label>
+            <input type="text" id="examContextInput" value="" placeholder="GCP Associate Cloud Engineer (ACE)"
+                style="flex:1; min-width:220px; max-width:400px; padding:5px 10px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px;"
+                onkeydown="if(event.key==='Enter') saveExamContext()">
+            <button class="btn" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:5px 12px;font-size:12px;" onclick="saveExamContext()">儲存</button>
+            <span id="examContextSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600;">✓ 已儲存</span>
+            <span style="font-size:11px; color:#adb5bd;">（AI 詳解 prompt 會帶入此情境，預設為 GCP ACE）</span>
+        </div>
+
+        <div class="exam-timer-bar" id="examTimerBar">
+            <div class="timer-left">
+                <span class="timer-session-label" id="timerSessionLabel">模擬考 1</span>
+                <span class="timer-display" id="timerDisplay">2:00:00</span>
+                <span style="font-size:12px;opacity:0.6;">（正式考試為 50 題 / 2 小時）</span>
+            </div>
+            <div class="timer-right">
+                <button class="btn-submit-exam" onclick="endExam(false)">📊 交卷計算成績</button>
+                <button class="btn-exit-exam" onclick="exitExamWithConfirm()">離開考試</button>
+            </div>
+        </div>
+
+        <div class="retest-banner" id="retestBanner">🔄 重考模式：題目答案已隱藏，請重新作答後再顯示答案</div>
+
+        <div class="modal-overlay" id="examPickerModal">
+            <div class="modal-box">
+                <h2>🎯 模擬考試</h2>
+                <div class="exam-settings-box">
+                    <div class="exam-settings-row">
+                        <span class="exam-settings-label">⏱ 考試時間</span>
+                        <input type="number" id="examDurationInput" min="5" max="300" value="120" style="width:70px; padding:4px 8px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px; text-align:center;">
+                        <span class="exam-settings-unit">分鐘</span>
+                    </div>
+                    <div class="exam-settings-row">
+                        <span class="exam-settings-label">📋 每場題數</span>
+                        <input type="number" id="examSizeInput" min="5" max="500" value="60" style="width:70px; padding:4px 8px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px; text-align:center;">
+                        <span class="exam-settings-unit">題</span>
+                    </div>
+                    <button class="btn-ai" style="padding:5px 14px; font-size:12px; margin-top:4px;" onclick="applyExamSettings()">套用設定</button>
+                    <span id="examSettingsSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600; margin-left:6px;">✓ 已套用，場次已更新</span>
+                    <p class="exam-settings-note">⚠️ 修改每場題數後，各場次對應的題目範圍會改變，歷史記錄僅供參考。</p>
+                </div>
+                <div class="session-grid" id="sessionGrid"></div>
+                <div class="modal-footer">
+                    <button class="btn-modal-close" onclick="closeModal('examPickerModal')">關閉</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="resultsModal">
+            <div class="modal-box">
+                <h2>📊 本場考試成績</h2>
+                <div class="results-header">
+                    <div class="results-score" id="resultsScore">--</div>
+                    <div class="results-pass-label" id="resultsPassLabel">--</div>
+                </div>
+                <div class="results-grid" id="resultsGrid"></div>
+                <div class="topic-breakdown" id="topicBreakdown"></div>
+                <div class="history-section" id="historySection"></div>
+                <div class="modal-footer">
+                    <button class="btn-modal-close" onclick="reviewWrongAnswers()">❌ 複習答錯題</button>
+                    <button class="btn-modal-close" onclick="closeModal('resultsModal')">關閉</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-list" id="questionList">
+            <div class="loading">載入中...</div>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script>
+        let allQuestions = [];
+        let filteredQuestions = [];
+        let currentPage = 1;
+        const questionsPerPage = 10;
+        let userProgress = {};
+        let retestMode = false;
+        let retestRevealed = new Set();
+        let noteTimers = {};
+        let aiCache = {};
+        try { aiCache = JSON.parse(localStorage.getItem('gcp_ai_cache') || '{}'); } catch(e) { aiCache = {}; }
+        // 多輪對話歷史（key = qid，value = [{role, content}, ...]），從 aiCache 還原
+        let chatHistories = {};
+        for (const key of Object.keys(aiCache)) {
+            if (key.endsWith('_chat') && Array.isArray(aiCache[key])) {
+                chatHistories[key.slice(0, -5)] = aiCache[key];
+            }
+        }
+        const AI_ENDPOINT = 'http://localhost:4142/v1/chat/completions';
+        const AI_MODEL = 'gemini-3-flash-preview';
+        const AI_KEY = 'your-api-key-here';
+
+        // 考試情境設定（用於 AI prompt，可由使用者自訂）
+        const DEFAULT_EXAM_CONTEXT = 'GCP Associate Cloud Engineer (ACE)';
+        let examContext = localStorage.getItem('exam_context') || DEFAULT_EXAM_CONTEXT;
+
+        function updatePageTitle() {
+            const label = examContext || DEFAULT_EXAM_CONTEXT;
+            document.getElementById('pageTitle').textContent = '🎓 ' + label + ' 題庫';
+            document.title = label + ' 題庫練習系統';
+        }
+
+        function saveExamContext() {
+            const val = document.getElementById('examContextInput').value.trim();
+            examContext = val || DEFAULT_EXAM_CONTEXT;
+            localStorage.setItem('exam_context', examContext);
+            document.getElementById('examContextInput').value = examContext;
+            updatePageTitle();
+            document.getElementById('examContextSaved').style.display = 'inline';
+            setTimeout(() => { document.getElementById('examContextSaved').style.display = 'none'; }, 1500);
+        }
+
+        const EXAM_WARN_30 = 30 * 60;
+        const EXAM_WARN_5  = 5 * 60;
+        let examDuration    = parseInt(localStorage.getItem('exam_duration_secs'))  || 2 * 60 * 60;
+        let examSessionSize = parseInt(localStorage.getItem('exam_session_size'))   || 60;
+        let examSessions = [];
+        let activeExam = null;
+        let examTimerInterval = null;
+        let examHistory = [];
+        try { examHistory = JSON.parse(localStorage.getItem('gcp_exam_history') || '[]'); } catch(e) { examHistory = []; }
+
+        // 載入資料
+         async function loadData() {
+             try {
+                 // 嘗試從嵌入式資料載入（如果存在）
+                 if (typeof embeddedQuestionsData !== 'undefined' && typeof embeddedExplanationsData !== 'undefined') {
+                     allQuestions = embeddedQuestionsData;
+                     const explanations = embeddedExplanationsData;
+                     
+                     // 映射詳解到題目
+                     allQuestions.forEach(q => {
+                         if (explanations[q.id]) {
+                             q.explanation = explanations[q.id];
+                         }
+                     });
+                     console.log(`✓ 已載入 ${Object.keys(explanations).length} 題詳解 (嵌入式)`);
+                 } else {
+                     // 降級：從 JSON 檔案載入
+                     const response = await fetch('questions.json');
+                     allQuestions = await response.json();
+                     
+                     // 載入詳解檔案
+                     try {
+                         const expResponse = await fetch('explanations.json');
+                         const explanations = await expResponse.json();
+                         // 映射詳解到題目
+                         allQuestions.forEach(q => {
+                             if (explanations[q.id]) {
+                                 q.explanation = explanations[q.id];
+                             }
+                         });
+                         console.log(`✓ 已載入 ${Object.keys(explanations).length} 題詳解 (外部檔案)`);
+                     } catch (error) {
+                         console.warn('詳解檔案尚未完全載入或不存在:', error.message);
+                     }
+                 }
+                 
+                 filteredQuestions = [...allQuestions];
+                 
+                 // 初始化主題篩選器
+                 const topics = [...new Set(allQuestions.map(q => q.topic))].sort((a, b) => a - b);
+                 const topicFilter = document.getElementById('topicFilter');
+                 topics.forEach(topic => {
+                     const option = document.createElement('option');
+                     option.value = topic;
+                     option.textContent = `Topic ${topic}`;
+                     topicFilter.appendChild(option);
+                 });
+                 
+                  renderQuestions();
+                  renderPagination();
+                  updateStats();
+                  buildExamSessions();
+             } catch (error) {
+                 document.getElementById('questionList').innerHTML = `
+                     <div style="text-align: center; padding: 50px; color: #dc3545;">
+                         <h3>⚠️ 無法載入題庫資料</h3>
+                         <p>請確認 questions.json 和 explanations.json 檔案存在於同一目錄下，或使用嵌入式版本</p>
+                         <p>錯誤訊息: ${error.message}</p>
+                     </div>
+                 `;
+                 console.error(error);
+             }
+         }
+
+        // 篩選題目
+        function filterQuestions() {
+            const searchText = document.getElementById('searchBox').value.toLowerCase();
+            const topicFilter = document.getElementById('topicFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            retestMode = statusFilter === 'bookmarked_retest' || statusFilter === 'wrong_retest';
+            retestRevealed = new Set();
+            const banner = document.getElementById('retestBanner');
+            if (banner) banner.classList.toggle('visible', retestMode);
+
+            filteredQuestions = allQuestions.filter(q => {
+                const matchSearch = !searchText || 
+                    q.question.toLowerCase().includes(searchText) ||
+                    q.id.toLowerCase().includes(searchText) ||
+                    Object.values(q.options).some(opt => opt.toLowerCase().includes(searchText));
+
+                const matchTopic = !topicFilter || q.topic == topicFilter;
+
+                let matchStatus = true;
+                const p = userProgress[q.id];
+                if (statusFilter === 'completed') {
+                    matchStatus = p?.completed;
+                } else if (statusFilter === 'bookmarked') {
+                    matchStatus = p?.bookmarked;
+                } else if (statusFilter === 'incomplete') {
+                    matchStatus = !p?.completed;
+                } else if (statusFilter === 'bookmarked_retest') {
+                    matchStatus = !!p?.bookmarked;
+                } else if (statusFilter === 'wrong_retest') {
+                    if (!p || !p.revealed) { matchStatus = false; }
+                    else {
+                        const correct = q.answer.split('').sort().join('');
+                        const selected = (p.selected || []).sort().join('');
+                        matchStatus = correct !== selected;
+                    }
+                }
+
+                return matchSearch && matchTopic && matchStatus;
+            });
+
+            currentPage = 1;
+            renderQuestions();
+            renderPagination();
+        }
+
+        // 渲染題目
+        function escHtml(str) {
+            return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function renderQuestions() {
+            const startIdx = (currentPage - 1) * questionsPerPage;
+            const endIdx = startIdx + questionsPerPage;
+            const pageQuestions = filteredQuestions.slice(startIdx, endIdx);
+
+            const listDiv = document.getElementById('questionList');
+
+            if (pageQuestions.length === 0) {
+                listDiv.innerHTML = '<div class="no-results"><h2>😕 找不到題目</h2><p>請調整篩選條件</p></div>';
+                return;
+            }
+
+            listDiv.innerHTML = pageQuestions.map(q => {
+                const progress = userProgress[q.id] || {};
+                const isMulti = q.answer.length > 1;
+                const correctAnswers = q.answer.split('');
+
+                // 重考模式：視覺上隱藏已選/已顯示狀態，除非本次已手動揭曉
+                const dp = (retestMode && !retestRevealed.has(q.id))
+                    ? { ...progress, revealed: false, selected: [] }
+                    : progress;
+
+                return `
+                    <div class="question-card" data-qid="${q.id}">
+                        <div class="question-header">
+                            <div class="question-id">
+                                ${q.id} | Topic ${q.topic} | #${q.idx}
+                                ${dp.revealed ? `
+                                <span class="answer-badge ${isMulti ? 'multi-answer-badge' : ''}">
+                                    正解: ${q.answer}${isMulti ? ' (多選)' : ''}
+                                </span>
+                                ` : (isMulti ? '<span class="answer-badge multi-answer-badge">多選題</span>' : '')}
+                                ${progress.note ? '<span class="note-indicator" title="有筆記">📝</span>' : ''}
+                            </div>
+                            <div class="question-actions">
+                                <button class="bookmark-btn ${progress.bookmarked ? 'active' : ''}" 
+                                        onclick="toggleBookmark('${q.id}')">
+                                    ${progress.bookmarked ? '⭐' : '☆'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="question-text">${q.question}</div>
+
+                        <div class="options">
+                            ${Object.entries(q.options).map(([key, value]) => `
+                                <div class="option ${dp.selected?.includes(key) ? 'selected' : ''} 
+                                            ${dp.revealed && correctAnswers.includes(key) ? 'correct' : ''}
+                                            ${dp.revealed && dp.selected?.includes(key) && !correctAnswers.includes(key) ? 'wrong' : ''}"
+                                     onclick="selectOption('${q.id}', '${key}', ${isMulti})">
+                                    <span class="option-label">${key}.</span>
+                                    <span>${value}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        ${!dp.revealed ? `
+                            <button class="btn btn-primary" onclick="${retestMode ? `revealInRetest('${q.id}')` : `revealAnswer('${q.id}')`}">
+                                顯示答案
+                            </button>
+                        ` : ''}
+
+                        <details>
+                            <summary>📝 我的筆記${progress.note ? ' ✏️' : ''}</summary>
+                            <div style="padding: 10px 0 4px;">
+                                <textarea class="note-textarea"
+                                    placeholder="寫下你當時答題的疑惑或思路，例如：我以為 A 選項是對的，因為…"
+                                    oninput="saveNote('${q.id}', this.value)"
+                                >${escHtml(progress.note || '')}</textarea>
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>📖 我的詳解${q.explanation ? '' : ' (尚未完成)'}</summary>
+                            <div class="explanation">
+                                ${q.explanation ? `
+                                    <div style="margin-bottom: 15px;">
+                                        <strong style="color: #28a745;">✓ 正解分析：</strong>
+                                        <p style="margin-top: 8px; line-height: 1.6;">${q.explanation.correct}</p>
+                                    </div>
+                                    
+                                    ${q.explanation.wrong && Object.keys(q.explanation.wrong).length > 0 ? `
+                                        <div style="margin-bottom: 15px;">
+                                            <strong style="color: #dc3545;">✗ 錯誤選項分析：</strong>
+                                            ${Object.entries(q.explanation.wrong).map(([key, reason]) => `
+                                                <p style="margin-top: 8px; line-height: 1.6;">
+                                                    <span style="font-weight: 600; color: #dc3545;">${key}.</span> ${reason}
+                                                </p>
+                                            `).join('')}
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${q.explanation.knowledge && q.explanation.knowledge.length > 0 ? `
+                                        <div style="margin-bottom: 15px;">
+                                            <strong>📚 相關知識點：</strong>
+                                            <ul style="margin-top: 8px; margin-left: 20px; line-height: 1.8;">
+                                                ${q.explanation.knowledge.map(k => `<li>${k}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${q.explanation.best_practice ? `
+                                        <div style="margin-bottom: 15px;">
+                                            <strong>💡 最佳實踐：</strong>
+                                            <p style="margin-top: 8px; line-height: 1.6; background: #e7f3ff; padding: 10px; border-radius: 6px; border-left: 4px solid #2196F3;">
+                                                ${q.explanation.best_practice}
+                                            </p>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${q.explanation.gcloud || q.explanation.commands ? `
+                                        <div style="margin-bottom: 15px;">
+                                            <strong>⌨️ 相關指令：</strong>
+                                            <pre style="background: #2d2d2d; color: #f8f8f2; padding: 12px; border-radius: 6px; overflow-x: auto; margin-top: 8px; font-size: 13px;"><code>${escHtml(q.explanation.gcloud || q.explanation.commands)}</code></pre>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    ${q.explanation.docs ? `
+                                        <div>
+                                            <strong>📄 官方文件：</strong>
+                                            <p style="margin-top: 8px;">
+                                                <a href="${q.explanation.docs}" target="_blank" class="link">${q.explanation.docs}</a>
+                                            </p>
+                                        </div>
+                                    ` : ''}
+                                ` : `
+                                    <p style="color: #6c757d;">此題詳解尚未完成，將在後續更新中提供。</p>
+                                `}
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>💬 ExamTopics 社群討論</summary>
+                            <div style="padding:6px 0 2px;">${formatComments(q.comments_raw)}</div>
+                        </details>
+
+                        <details>
+                            <summary>🔗 原始連結</summary>
+                            <div>
+                                <p>題目時間戳記: ${q.timestamp}</p>
+                                <p><a href="${q.link}" target="_blank" class="link">在 ExamTopics 上查看完整討論</a></p>
+                            </div>
+                        </details>
+
+                        <details class="ai-section">
+                            <summary>🤖 AI 進階詳解</summary>
+                            <div style="padding: 8px 0 4px;">
+                                ${(aiCache[q.id + '_error'] || aiCache[q.id]) ? `
+                                 <div class="ai-content">${formatAIResponse(aiCache[q.id + '_error'] || aiCache[q.id])}</div>
+                                 <hr class="ai-section-divider">
+                                 <p style="font-size:13px; color:#6c757d; margin-bottom:4px;">💬 還有其他疑問？輸入你的問題：</p>
+                                 <div id="ai-custom-content-${q.id}"></div>
+                                 <textarea class="ai-custom-textarea" id="ai-custom-input-${q.id}" placeholder="例如：Cloud Run 和 Cloud Functions 在哪些情境下該選哪個？" onkeydown="handleChatKey(event, '${q.id}')"></textarea>
+                                 <button class="btn-ai-custom" id="ai-custom-btn-${q.id}" onclick="callAICustom('${q.id}')">💬 發送問題</button>
+                                ` : `
+                                <p style="font-size:13px; color:#6c757d; margin-bottom:8px;">
+                                    根據你的答題紀錄，AI 可以分析你的錯誤，或直接回答你想問的問題。
+                                    ${!progress.revealed ? '<br><em>（建議先顯示答案後再使用，分析錯誤時 AI 會用到你選的選項）</em>' : ''}
+                                </p>
+                                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                    <button class="btn-ai" id="ai-btn-${q.id}" onclick="callAI('${q.id}')">❓ 分析我的錯誤</button>
+                                    <button class="btn-ai-custom" onclick="toggleAICustom('${q.id}')">💬 自由提問</button>
+                                </div>
+                                <div id="ai-content-${q.id}" style="margin-top:10px;"></div>
+                                 <div id="ai-custom-area-${q.id}" style="display:none; margin-top:10px;">
+                                     <div id="ai-custom-content-${q.id}"></div>
+                                     <textarea class="ai-custom-textarea" id="ai-custom-input-${q.id}" placeholder="例如：Cloud Run 和 Cloud Functions 在哪些情境下該選哪個？" onkeydown="handleChatKey(event, '${q.id}')"></textarea>
+                                     <button class="btn-ai-custom" id="ai-custom-btn-${q.id}" onclick="callAICustom('${q.id}')" style="margin-top:6px;">💬 發送問題</button>
+                                 </div>
+                                `}
+                            </div>
+                        </details>
+                    </div>
+                `;
+            }).join('');
+
+            // 渲染已有的對話歷史
+            pageQuestions.forEach(q => {
+                if (chatHistories[q.id]?.length > 0) renderChatHistory(q.id);
+            });
+        }
+
+        // 渲染分頁
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
+            const paginationDiv = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">« 上一頁</button>`;
+            }
+
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+
+            if (startPage > 1) {
+                html += `<button class="page-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) html += `<span class="page-btn" style="border:none;cursor:default;">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="page-btn" style="border:none;cursor:default;">...</span>`;
+                html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">下一頁 »</button>`;
+            }
+
+            paginationDiv.innerHTML = html;
+        }
+
+        // 切換頁面
+        function changePage(page) {
+            currentPage = page;
+            renderQuestions();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 選擇選項
+        function selectOption(qid, option, isMulti) {
+            if (!userProgress[qid]) {
+                userProgress[qid] = { selected: [] };
+            }
+
+            if (isMulti) {
+                const idx = userProgress[qid].selected.indexOf(option);
+                if (idx > -1) {
+                    userProgress[qid].selected.splice(idx, 1);
+                } else {
+                    userProgress[qid].selected.push(option);
+                }
+            } else {
+                userProgress[qid].selected = [option];
+            }
+
+            saveProgress();
+            renderQuestions();
+        }
+
+        // 顯示答案
+        function revealAnswer(qid) {
+            if (!userProgress[qid]) {
+                userProgress[qid] = { selected: [] };
+            }
+            userProgress[qid].revealed = true;
+            userProgress[qid].completed = true;
+            saveProgress();
+            updateStats();
+
+            // 直接更新 DOM，避免整個列表重新渲染導致展開狀態被重置
+            const q = allQuestions.find(q => q.id === qid);
+            if (!q) return;
+
+            const card = document.querySelector(`.question-card[data-qid="${qid}"]`);
+            if (!card) return;
+
+            const isMulti = q.answer.length > 1;
+            const correctAnswers = q.answer.split('');
+            const selected = userProgress[qid].selected || [];
+
+            // 更新答案徽章
+            const qidDiv = card.querySelector('.question-id');
+            const oldBadge = qidDiv.querySelector('.answer-badge');
+            if (oldBadge) oldBadge.remove();
+            const badge = document.createElement('span');
+            badge.className = `answer-badge${isMulti ? ' multi-answer-badge' : ''}`;
+            badge.textContent = `正解: ${q.answer}${isMulti ? ' (多選)' : ''}`;
+            qidDiv.insertBefore(badge, qidDiv.querySelector('.note-indicator') || null);
+
+            // 更新選項樣式
+            card.querySelectorAll('.option').forEach(optEl => {
+                const key = optEl.querySelector('.option-label').textContent.replace('.', '').trim();
+                optEl.classList.remove('correct', 'wrong');
+                if (correctAnswers.includes(key)) optEl.classList.add('correct');
+                if (selected.includes(key) && !correctAnswers.includes(key)) optEl.classList.add('wrong');
+            });
+
+            // 移除「顯示答案」按鈕
+            const btn = card.querySelector('.btn.btn-primary');
+            if (btn && btn.textContent.trim() === '顯示答案') btn.remove();
+        }
+
+        // 切換書籤
+        function toggleBookmark(qid) {
+            if (!userProgress[qid]) {
+                userProgress[qid] = {};
+            }
+            userProgress[qid].bookmarked = !userProgress[qid].bookmarked;
+            saveProgress();
+            updateStats();
+
+            // 直接更新書籤按鈕，不重新渲染
+            const card = document.querySelector(`.question-card[data-qid="${qid}"]`);
+            if (!card) { renderQuestions(); return; }
+            const btn = card.querySelector('.bookmark-btn');
+            if (btn) {
+                const isBookmarked = userProgress[qid].bookmarked;
+                btn.className = `bookmark-btn${isBookmarked ? ' active' : ''}`;
+                btn.textContent = isBookmarked ? '⭐' : '☆';
+            }
+        }
+
+        // 跳至題號
+        function jumpToQuestion() {
+            const qid = prompt('請輸入題目 ID (例如: T1-Q246):');
+            if (!qid) return;
+
+            const idx = allQuestions.findIndex(q => q.id.toUpperCase() === qid.toUpperCase());
+            if (idx === -1) {
+                alert('找不到該題目！');
+                return;
+            }
+
+            // 重置篩選
+            document.getElementById('searchBox').value = '';
+            document.getElementById('topicFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            filterQuestions();
+
+            // 計算頁數
+            const targetPage = Math.ceil((idx + 1) / questionsPerPage);
+            changePage(targetPage);
+
+            // 滾動到題目
+            setTimeout(() => {
+                const card = document.querySelector(`[data-qid="${qid}"]`);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.style.animation = 'pulse 1s ease-in-out';
+                }
+            }, 100);
+        }
+
+        // 重置進度
+        function resetProgress() {
+            if (confirm('確定要重置所有進度嗎？此操作無法復原。')) {
+                userProgress = {};
+                localStorage.removeItem('gcp_ace_progress');
+                updateStats();
+                renderQuestions();
+            }
+        }
+
+        // 儲存進度
+        function saveProgress() {
+            localStorage.setItem('gcp_ace_progress', JSON.stringify(userProgress));
+        }
+
+        // 更新統計
+        function updateStats() {
+            const completed = Object.values(userProgress).filter(p => p.completed).length;
+            const bookmarked = Object.values(userProgress).filter(p => p.bookmarked).length;
+
+            document.getElementById('totalQuestions').textContent = allQuestions.length;
+            document.getElementById('completedQuestions').textContent = completed;
+            document.getElementById('bookmarkedQuestions').textContent = bookmarked;
+        }
+
+        // 下載進度
+        function downloadProgress() {
+            const progressData = {
+                exportedAt: new Date().toISOString(),
+                version: '2.0',
+                progress: userProgress,
+                aiCache: aiCache,
+                examHistory: examHistory
+            };
+
+            const jsonString = JSON.stringify(progressData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gcp_ace_progress_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            console.log('✓ 進度已下載（含 AI 快取、考試歷史）');
+            alert('進度已下載！\n\n包含：答題進度、筆記、AI 詳解快取、模擬考試歷史\n檔案名稱：gcp_ace_progress_YYYY-MM-DD.json');
+        }
+
+        // 匯入進度
+        function importProgress(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // 驗證格式
+                    if (!importedData.progress || typeof importedData.progress !== 'object') {
+                        throw new Error('進度檔案格式無效');
+                    }
+
+                    const ver = importedData.version || '1.0';
+                    const hasAI = !!importedData.aiCache;
+                    const hasExamHistory = !!importedData.examHistory;
+                    const details = [
+                        `- 匯出時間：${importedData.exportedAt || '未知'}`,
+                        `- 版本：${ver}`,
+                        hasAI ? '- 包含 AI 詳解快取 ✅' : '- 不含 AI 詳解快取',
+                        hasExamHistory ? '- 包含模擬考試歷史 ✅' : '- 不含模擬考試歷史',
+                    ].join('\n');
+
+                    if (!confirm(`確定要匯入進度嗎？將覆蓋現有資料。\n\n${details}`)) {
+                        return;
+                    }
+
+                    // 執行匯入
+                    userProgress = importedData.progress;
+                    saveProgress();
+
+                    if (hasAI) {
+                        aiCache = importedData.aiCache;
+                        localStorage.setItem('gcp_ai_cache', JSON.stringify(aiCache));
+                        // 重建對話歷史 in-memory 物件
+                        for (const key of Object.keys(aiCache)) {
+                            if (key.endsWith('_chat') && Array.isArray(aiCache[key])) {
+                                chatHistories[key.slice(0, -5)] = aiCache[key];
+                            }
+                        }
+                    }
+                    if (hasExamHistory) {
+                        examHistory = importedData.examHistory;
+                        localStorage.setItem('gcp_exam_history', JSON.stringify(examHistory));
+                    }
+
+                    updateStats();
+                    renderQuestions();
+                    
+                    console.log('✓ 進度已匯入（v' + ver + '）');
+                    alert('進度已成功匯入！' + (hasAI ? '\n（含 AI 詳解快取）' : '') + (hasExamHistory ? '\n（含模擬考試歷史）' : ''));
+                } catch (error) {
+                    console.error('匯入進度失敗:', error);
+                    alert(`匯入失敗：${error.message}\n\n請確保檔案是有效的 JSON 進度備份檔案。`);
+                }
+            };
+            reader.readAsText(file);
+
+            // 重置檔案輸入，以便重複匯入同一檔案
+            event.target.value = '';
+        }
+
+        // 儲存筆記（防抖 500ms）
+        function saveNote(qid, value) {
+            clearTimeout(noteTimers[qid]);
+            noteTimers[qid] = setTimeout(() => {
+                if (!userProgress[qid]) userProgress[qid] = {};
+                userProgress[qid].note = value;
+                saveProgress();
+            }, 500);
+        }
+
+        // 重考模式：本次揭曉答案（不影響進度，只是讓這次看得到）
+        function revealInRetest(qid) {
+            retestRevealed.add(qid);
+            renderQuestions();
+        }
+
+        // 格式化 ExamTopics 社群討論
+        function formatComments(rawText) {
+            if (!rawText || !rawText.trim()) return '<p style="color:#adb5bd;font-size:13px;">無社群討論記錄</p>';
+            // 以 [username] 為分隔切割每則留言
+            const parts = rawText.split(/(?=\[[^\]]{1,60}\])/);
+            const items = parts
+                .map(part => {
+                    const m = part.match(/^\[([^\]]{1,60})\]\s*([\s\S]*)/);
+                    if (!m) return null;
+                    const username = escHtml(m[1].trim());
+                    let body = escHtml(m[2].trim());
+                    // 把 "Selected Answer: X" 換成徽章
+                    body = body.replace(/Selected Answer:\s*([A-Z,\s]+)/g, (_, ans) =>
+                        `<span class="comment-answer-badge">✔ ${ans.trim()}</span> `
+                    );
+                    if (!username && !body) return null;
+                    return `<div class="comment-item">
+                        <div class="comment-username">👤 ${username}</div>
+                        <div class="comment-content">${body}</div>
+                    </div>`;
+                })
+                .filter(Boolean);
+            return items.length
+                ? `<div class="comments-list">${items.join('')}</div>`
+                : `<div class="comments-raw">${escHtml(rawText)}</div>`;
+        }
+
+        // 格式化 AI 回覆
+        function formatAIResponse(text) {
+            return `<div style="line-height:1.75; white-space:pre-wrap; font-size:14px;">${escHtml(text)}</div>`;
+        }
+
+        // 切換自由提問區塊
+        function toggleAICustom(qid) {
+            const area = document.getElementById(`ai-custom-area-${qid}`);
+            if (area) {
+                area.style.display = area.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // 呼叫 AI 進階詳解（錯誤分析）
+        async function callAI(qid) {
+            const q = allQuestions.find(x => x.id === qid);
+            if (!q) return;
+
+            const progress = userProgress[qid] || {};
+            const selectedAnswers = progress.selected || [];
+
+            // 向後相容：舊 key aiCache[qid] 也算快取
+            const cacheKey = qid + '_error';
+            if (aiCache[cacheKey] || aiCache[qid]) {
+                const contentDiv = document.getElementById(`ai-content-${qid}`);
+                const cached = aiCache[cacheKey] || aiCache[qid];
+                if (contentDiv) contentDiv.innerHTML = `<div class="ai-content">${formatAIResponse(cached)}</div>`;
+                return;
+            }
+
+            const btn = document.getElementById(`ai-btn-${qid}`);
+            const contentDiv = document.getElementById(`ai-content-${qid}`);
+            if (btn) btn.disabled = true;
+            if (contentDiv) contentDiv.innerHTML = '<p class="ai-loading">🤖 AI 分析中，請稍候⋯⋯</p>';
+
+            // 組建 prompt
+            const expParts = [];
+            if (q.explanation) {
+                if (q.explanation.correct) expParts.push(`正解分析：${q.explanation.correct}`);
+                if (q.explanation.wrong && Object.keys(q.explanation.wrong).length > 0) {
+                    expParts.push('各選項錯誤原因：\n' + Object.entries(q.explanation.wrong).map(([k,v]) => `  ${k}: ${v}`).join('\n'));
+                }
+                if (q.explanation.knowledge && q.explanation.knowledge.length > 0) {
+                    expParts.push(`相關知識點：${q.explanation.knowledge.join('、')}`);
+                }
+                if (q.explanation.best_practice) expParts.push(`最佳實踐：${q.explanation.best_practice}`);
+            }
+            const expText = expParts.length > 0 ? expParts.join('\n\n') : '（無既有詳解）';
+
+            const prompt = `你是${examContext}認證考試的教師。以下是一道${examContext}認證考試題目。
+
+題目 ID：${qid}
+題目內容：${q.question}
+選項：
+${Object.entries(q.options).map(([k,v]) => `  ${k}. ${v}`).join('\n')}
+
+正確答案：${q.answer}
+我所選的答案：${selectedAnswers.length > 0 ? selectedAnswers.join(', ') : '（未選，僅想了解詳解）'}
+
+---
+既有詳解：
+${expText}
+---
+
+請用繁體中文，針對以下兩點提供清晰、深入的說明：
+1. 我選的「${selectedAnswers.join(', ') || '（未選）'}」有何問題或不足？
+2. 正確答案「${q.answer}」在這個情境下為何是最佳選擇？
+
+重點放在釐清${examContext}核心觀念，幫助學習者不再犯同樣錯誤。請避免重複既有詳解，提供更多補充視角或實際情境說明。`;
+
+            try {
+                const response = await fetch(AI_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AI_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: AI_MODEL,
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 5000
+                    })
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`API 回應錯誤 (${response.status}): ${errText.substring(0, 200)}`);
+                }
+
+                const data = await response.json();
+                const text = data.choices?.[0]?.message?.content;
+                if (!text) throw new Error('API 回傳空內容');
+
+                // 快取並顯示
+                aiCache[cacheKey] = text;
+                localStorage.setItem('gcp_ai_cache', JSON.stringify(aiCache));
+                if (contentDiv) contentDiv.innerHTML = `<div class="ai-content">${formatAIResponse(text)}</div>`;
+
+            } catch (err) {
+                if (contentDiv) contentDiv.innerHTML = `<p style="color:#dc3545; font-size:13px;">❌ AI 請求失敗：${escHtml(err.message)}<br><br>請確認 OpenCode 本地服務（<code>localhost:4142</code>）是否在運行中。</p>`;
+            }
+
+            if (btn) btn.disabled = false;
+        }
+
+        // 處理 Ctrl+Enter 發送
+        function handleChatKey(event, qid) {
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault();
+                callAICustom(qid);
+            }
+        }
+
+        // 渲染對話歷史
+        function renderChatHistory(qid) {
+            const contentDiv = document.getElementById(`ai-custom-content-${qid}`);
+            if (!contentDiv) return;
+            const history = chatHistories[qid] || [];
+            if (history.length === 0) { contentDiv.innerHTML = ''; return; }
+
+            const bubbles = history.map(msg => {
+                const isUser = msg.role === 'user';
+                return `<div class="chat-bubble ${isUser ? 'user' : 'assistant'}">
+                    <div class="chat-label">${isUser ? '🙋 你' : '🤖 AI'}</div>
+                    <div>${isUser ? escHtml(msg.content) : formatAIResponse(msg.content)}</div>
+                </div>`;
+            }).join('');
+
+            contentDiv.innerHTML = `
+                <button class="chat-clear-btn" onclick="clearChat('${qid}')">🗑 清除對話</button>
+                <div class="chat-history" style="clear:both;">${bubbles}</div>
+            `;
+            // 自動捲到最新回覆
+            contentDiv.querySelector('.chat-history')?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // 清除對話紀錄
+        function clearChat(qid) {
+            if (!confirm('確定要清除這題的對話紀錄嗎？')) return;
+            chatHistories[qid] = [];
+            delete aiCache[qid + '_chat'];
+            localStorage.setItem('gcp_ai_cache', JSON.stringify(aiCache));
+            renderChatHistory(qid);
+        }
+
+        // 呼叫 AI 自由提問（多輪對話）
+        async function callAICustom(qid) {
+            const q = allQuestions.find(x => x.id === qid);
+            if (!q) return;
+
+            const inputEl = document.getElementById(`ai-custom-input-${qid}`);
+            const btn = document.getElementById(`ai-custom-btn-${qid}`);
+            const contentDiv = document.getElementById(`ai-custom-content-${qid}`);
+
+            const userQuestion = inputEl ? inputEl.value.trim() : '';
+            if (!userQuestion) {
+                if (inputEl) inputEl.placeholder = '請輸入你的問題後再發送。';
+                return;
+            }
+
+            const progress = userProgress[qid] || {};
+            const selectedAnswers = progress.selected || [];
+
+            const expParts = [];
+            if (q.explanation) {
+                if (q.explanation.correct) expParts.push(`正解分析：${q.explanation.correct}`);
+                if (q.explanation.wrong && Object.keys(q.explanation.wrong).length > 0) {
+                    expParts.push('各選項錯誤原因：\n' + Object.entries(q.explanation.wrong).map(([k,v]) => `  ${k}: ${v}`).join('\n'));
+                }
+                if (q.explanation.best_practice) expParts.push(`最佳實踐：${q.explanation.best_practice}`);
+            }
+            const expText = expParts.length > 0 ? expParts.join('\n\n') : '（無既有詳解）';
+
+            const systemPrompt = `你是${examContext}認證考試的教師。以下是本次對話的題目背景，請在整個對話中保持這個情境。
+
+題目 ID：${qid}
+題目內容：${q.question}
+選項：
+${Object.entries(q.options).map(([k,v]) => `  ${k}. ${v}`).join('\n')}
+
+正確答案：${q.answer}
+學習者選的答案：${selectedAnswers.length > 0 ? selectedAnswers.join(', ') : '（未選）'}
+
+既有詳解：
+${expText}
+
+請用繁體中文回答，結合題目情境和${examContext}核心觀念，提供清晰且有深度的說明。`;
+
+            // 初始化或取得現有對話歷史
+            if (!chatHistories[qid]) chatHistories[qid] = [];
+            chatHistories[qid].push({ role: 'user', content: userQuestion });
+
+            // 立即顯示使用者訊息
+            if (inputEl) inputEl.value = '';
+            renderChatHistory(qid);
+
+            // 在最後加入 loading 提示
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'chat-bubble assistant';
+            loadingBubble.innerHTML = '<div class="chat-label">🤖 AI</div><p class="ai-loading">思考中⋯⋯</p>';
+            contentDiv.querySelector('.chat-history')?.appendChild(loadingBubble);
+
+            if (btn) btn.disabled = true;
+
+            try {
+                const messages = [
+                    { role: 'system', content: systemPrompt },
+                    ...chatHistories[qid]
+                ];
+
+                const response = await fetch(AI_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AI_KEY}`
+                    },
+                    body: JSON.stringify({ model: AI_MODEL, messages, max_tokens: 5000 })
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`API 回應錯誤 (${response.status}): ${errText.substring(0, 200)}`);
+                }
+
+                const data = await response.json();
+                const text = data.choices?.[0]?.message?.content;
+                if (!text) throw new Error('API 回傳空內容');
+
+                chatHistories[qid].push({ role: 'assistant', content: text });
+
+                // 儲存到 aiCache
+                aiCache[qid + '_chat'] = chatHistories[qid];
+                localStorage.setItem('gcp_ai_cache', JSON.stringify(aiCache));
+
+            } catch (err) {
+                // 發生錯誤時移除剛才加入的 user 訊息，避免污染歷史
+                chatHistories[qid].pop();
+                chatHistories[qid].push({ role: 'assistant', content: `❌ 請求失敗：${err.message}\n\n請確認 OpenCode 本地服務（localhost:4142）是否在運行中。` });
+            }
+
+            renderChatHistory(qid);
+            if (btn) btn.disabled = false;
+        }
+
+        function applyExamSettings() {
+            const mins = parseInt(document.getElementById('examDurationInput').value) || 120;
+            const size = parseInt(document.getElementById('examSizeInput').value) || 60;
+            examDuration    = Math.max(5, Math.min(300, mins)) * 60;
+            examSessionSize = Math.max(5, Math.min(allQuestions.length || 500, size));
+            localStorage.setItem('exam_duration_secs', examDuration);
+            localStorage.setItem('exam_session_size',  examSessionSize);
+            // 重算場次並刷新選單
+            buildExamSessions();
+            // 更新輸入框（防止超出範圍的值）
+            document.getElementById('examDurationInput').value = Math.round(examDuration / 60);
+            document.getElementById('examSizeInput').value = examSessionSize;
+            // 顯示儲存提示
+            const saved = document.getElementById('examSettingsSaved');
+            saved.style.display = 'inline';
+            setTimeout(() => { saved.style.display = 'none'; }, 1500);
+            // 重新渲染 session grid
+            openExamPickerGrid();
+        }
+
+        function openExamPickerGrid() {
+            const grid = document.getElementById('sessionGrid');
+            grid.innerHTML = examSessions.map(s => {
+                const count = s.end - s.start + 1;
+                const answered = allQuestions.slice(s.start, s.end + 1)
+                    .filter(q => userProgress[q.id]?.completed).length;
+                const history = examHistory.filter(h => h.sessionId === s.id);
+                const lastAttempt = history.length > 0 ? history[history.length - 1] : null;
+                const bestAttempt = history.length > 0 ? history.reduce((best, h) => h.correct > best.correct ? h : best) : null;
+
+                let statusClass = '';
+                let statusHtml = `<div class="session-meta">${count} 題 | 已作答 ${answered}/${count}</div>`;
+                if (bestAttempt) {
+                    const bestPct = Math.round(bestAttempt.correct / bestAttempt.total * 100);
+                    const pass = bestPct >= 70;
+                    statusClass = pass ? 'done' : '';
+                    const lastPct = Math.round(lastAttempt.correct / lastAttempt.total * 100);
+                    const lastDate = lastAttempt.date ? lastAttempt.date.slice(0, 10) : '';
+                    const attemptsLabel = history.length > 1 ? `共 ${history.length} 次` : `1 次`;
+                    statusHtml += `<div class="session-score ${pass ? 'pass' : 'fail'}">最佳 ${bestPct}% (${bestAttempt.correct}/${bestAttempt.total}) ${pass ? '✅' : '❌'}</div>`;
+                    statusHtml += `<div class="session-meta" style="margin-top:2px;">最近 ${lastPct}%（${lastDate}）· ${attemptsLabel}</div>`;
+                }
+                return `<div class="session-card ${statusClass}" onclick="confirmStartExam(${s.id})">
+                    <h3>${s.name}</h3>
+                    <div class="session-meta">第 ${s.start + 1}～${s.end + 1} 題</div>
+                    ${statusHtml}
+                </div>`;
+            }).join('');
+        }
+
+        function buildExamSessions() {
+            const total = allQuestions.length;
+            const sessions = [];
+            let start = 0;
+            let sessionId = 1;
+            while (start < total) {
+                const isLast = (start + examSessionSize) >= total;
+                const end = isLast ? total - 1 : start + examSessionSize - 1;
+                sessions.push({ id: sessionId, name: `模擬考 ${sessionId}`, start, end });
+                start = end + 1;
+                sessionId++;
+            }
+            examSessions = sessions;
+        }
+
+        function openExamPicker() {
+            // 同步設定輸入框的當前值
+            document.getElementById('examDurationInput').value = Math.round(examDuration / 60);
+            document.getElementById('examSizeInput').value = examSessionSize;
+            document.getElementById('examSettingsSaved').style.display = 'none';
+            openExamPickerGrid();
+            document.getElementById('examPickerModal').classList.add('visible');
+        }
+
+        function confirmStartExam(sessionId) {
+            const session = examSessions.find(s => s.id === sessionId);
+            if (!session) return;
+            const count = session.end - session.start + 1;
+            const mins = Math.round(examDuration / 60);
+            if (!confirm(`開始「${session.name}」？\n\n共 ${count} 題，計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。`)) return;
+            closeModal('examPickerModal');
+            startExam(sessionId);
+        }
+
+        function startExam(sessionId) {
+            const session = examSessions.find(s => s.id === sessionId);
+            if (!session) return;
+
+            activeExam = {
+                sessionId,
+                sessionName: session.name,
+                start: session.start,
+                end: session.end,
+                startTime: Date.now(),
+                remaining: examDuration
+            };
+
+            retestMode = true;
+            retestRevealed = new Set();
+
+            filteredQuestions = allQuestions.slice(session.start, session.end + 1);
+            currentPage = 1;
+
+            document.getElementById('examTimerBar').classList.add('visible');
+            document.getElementById('timerSessionLabel').textContent = session.name;
+            document.getElementById('retestBanner').classList.remove('visible');
+
+            renderQuestions();
+            renderPagination();
+
+            clearInterval(examTimerInterval);
+            examTimerInterval = setInterval(tickTimer, 1000);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function tickTimer() {
+            if (!activeExam) return;
+            const elapsed = Math.floor((Date.now() - activeExam.startTime) / 1000);
+            const remaining = Math.max(0, examDuration - elapsed);
+            const h = Math.floor(remaining / 3600);
+            const m = Math.floor((remaining % 3600) / 60);
+            const s = remaining % 60;
+            const display = document.getElementById('timerDisplay');
+            if (display) {
+                display.textContent = `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                display.className = 'timer-display' + (remaining <= EXAM_WARN_5 ? ' danger' : remaining <= EXAM_WARN_30 ? ' warning' : '');
+            }
+            if (remaining === EXAM_WARN_30) alert('⏰ 還剩 30 分鐘！');
+            if (remaining === EXAM_WARN_5)  alert('⏰ 還剩 5 分鐘！請確認答題進度。');
+            if (remaining === 0) endExam(true);
+        }
+
+        function endExam(timeUp) {
+            clearInterval(examTimerInterval);
+            if (!activeExam) return;
+
+            const session = examSessions.find(s => s.id === activeExam.sessionId);
+            const questions = allQuestions.slice(activeExam.start, activeExam.end + 1);
+            const elapsed = Math.floor((Date.now() - activeExam.startTime) / 1000);
+
+            let correct = 0, wrong = 0, unanswered = 0;
+            const topicStats = {};
+            questions.forEach(q => {
+                const p = userProgress[q.id] || {};
+                const sel = (p.selected || []).sort().join('');
+                const ans = q.answer.split('').sort().join('');
+                const topic = `Topic ${q.topic}`;
+                if (!topicStats[topic]) topicStats[topic] = { correct: 0, total: 0 };
+                topicStats[topic].total++;
+                if (!p.selected || p.selected.length === 0) { unanswered++; topicStats[topic]; }
+                else if (sel === ans) { correct++; topicStats[topic].correct++; }
+                else { wrong++; }
+            });
+
+            const total = questions.length;
+            const pct = Math.round(correct / total * 100);
+            const pass = pct >= 70;
+            const eh = Math.floor(elapsed / 3600);
+            const em = Math.floor((elapsed % 3600) / 60);
+            const es = elapsed % 60;
+            const timeUsed = `${eh > 0 ? eh + ':' : ''}${String(em).padStart(2,'0')}:${String(es).padStart(2,'0')}`;
+
+            const record = {
+                sessionId: activeExam.sessionId,
+                sessionName: activeExam.sessionName,
+                date: new Date().toISOString(),
+                correct, wrong, unanswered, total,
+                pct, pass, timeUsed, elapsed, timeUp
+            };
+            examHistory.push(record);
+            localStorage.setItem('gcp_exam_history', JSON.stringify(examHistory));
+
+            document.getElementById('examTimerBar').classList.remove('visible');
+            retestMode = false;
+            retestRevealed = new Set();
+            activeExam = null;
+
+            showResults(record, topicStats, session);
+
+            filteredQuestions = [...allQuestions];
+            document.getElementById('statusFilter').value = '';
+            currentPage = 1;
+            renderQuestions();
+            renderPagination();
+        }
+
+        function showResults(record, topicStats, session) {
+            const scoreEl = document.getElementById('resultsScore');
+            const labelEl = document.getElementById('resultsPassLabel');
+            scoreEl.textContent = `${record.pct}%`;
+            scoreEl.className = 'results-score ' + (record.pass ? 'pass' : 'fail');
+            labelEl.textContent = record.pass ? '🎉 通過！（≥70%）' : '❌ 未通過（<70%）';
+            labelEl.className = 'results-pass-label ' + (record.pass ? 'pass' : 'fail');
+
+            document.getElementById('resultsGrid').innerHTML = `
+                <div class="results-stat"><div class="val" style="color:#28a745">${record.correct}</div><div class="lbl">答對</div></div>
+                <div class="results-stat"><div class="val" style="color:#dc3545">${record.wrong}</div><div class="lbl">答錯</div></div>
+                <div class="results-stat"><div class="val" style="color:#6c757d">${record.unanswered}</div><div class="lbl">未作答</div></div>
+                <div class="results-stat"><div class="val">${record.total}</div><div class="lbl">總題數</div></div>
+                <div class="results-stat"><div class="val">${record.timeUsed}</div><div class="lbl">用時</div></div>
+                <div class="results-stat"><div class="val">${record.timeUp ? '⏰' : '✋'}</div><div class="lbl">${record.timeUp ? '時間到' : '手動交卷'}</div></div>
+            `;
+
+            const topicRows = Object.entries(topicStats).sort().map(([topic, stat]) => {
+                const pct = stat.total > 0 ? Math.round(stat.correct / stat.total * 100) : 0;
+                const cls = pct >= 70 ? '' : pct >= 50 ? 'mid' : 'low';
+                return `<div class="topic-row">
+                    <span style="min-width:70px;font-size:12px;">${topic}</span>
+                    <div class="topic-bar-bg"><div class="topic-bar-fill ${cls}" style="width:${pct}%"></div></div>
+                    <span style="min-width:55px;font-size:12px;text-align:right;">${stat.correct}/${stat.total} (${pct}%)</span>
+                </div>`;
+            }).join('');
+            document.getElementById('topicBreakdown').innerHTML = `<h4>📊 各 Topic 正確率</h4>${topicRows}`;
+
+            const sessionHistory = examHistory.filter(h => h.sessionId === record.sessionId);
+            const historyRows = sessionHistory.slice().reverse().slice(0, 8).map(h => {
+                const d = new Date(h.date);
+                const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+                return `<div class="history-row"><span>${dateStr}</span><span class="score ${h.pass ? 'pass':'fail'}">${h.pct}% (${h.correct}/${h.total})</span><span style="color:#6c757d;font-size:11px;">${h.timeUsed}</span></div>`;
+            }).join('');
+            document.getElementById('historySection').innerHTML = `<h4>本場歷史記錄（最近 8 次）</h4><div class="history-list">${historyRows || '<p style="color:#aaa;font-size:12px;">無記錄</p>'}</div>`;
+
+            document.getElementById('resultsModal').classList.add('visible');
+        }
+
+        function reviewWrongAnswers() {
+            closeModal('resultsModal');
+            document.getElementById('statusFilter').value = 'wrong_retest';
+            filterQuestions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function exitExamWithConfirm() {
+            if (!confirm('確定要離開考試嗎？計時將停止，本場不計入成績。')) return;
+            clearInterval(examTimerInterval);
+            document.getElementById('examTimerBar').classList.remove('visible');
+            retestMode = false;
+            retestRevealed = new Set();
+            activeExam = null;
+            filteredQuestions = [...allQuestions];
+            document.getElementById('statusFilter').value = '';
+            currentPage = 1;
+            renderQuestions();
+            renderPagination();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('visible');
+        }
+
+        // 事件監聽
+        document.getElementById('searchBox').addEventListener('input', filterQuestions);
+        document.getElementById('topicFilter').addEventListener('change', filterQuestions);
+        document.getElementById('statusFilter').addEventListener('change', filterQuestions);
+
+        // 初始化 examContext 輸入框
+        document.getElementById('examContextInput').value = examContext;
+        updatePageTitle();
+
+        // 初始化
+        loadData();
+    </script>
+</body>
+</html>
