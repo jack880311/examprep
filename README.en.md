@@ -151,7 +151,8 @@ This framework works with **any exam** — just replace the two JSON files.
 [
   {
     "id": "T1-Q1",
-    "topic": "Topic 1",
+    "topic": 1,
+    "idx": 1,
     "question": "Question text here",
     "options": {
       "A": "Option A text",
@@ -170,7 +171,8 @@ This framework works with **any exam** — just replace the two JSON files.
 | Field | Required | Description |
 |-------|----------|-------------|
 | `id` | ✅ | Unique identifier, suggest `TopicX-QY` format |
-| `topic` | ✅ | Topic category, used in the filter dropdown |
+| `topic` | ✅ | Topic number (integer); rendered as "Topic N" in the UI, used for filtering |
+| `idx` | ✅ | Display index (integer); shown in the top-right corner of each question |
 | `question` | ✅ | Question text |
 | `options` | ✅ | Options object (A/B/C/D, fewer or more supported) |
 | `answer` | ✅ | Correct answer; for multi-select use comma-separated like `"A,C"` |
@@ -191,8 +193,8 @@ This framework works with **any exam** — just replace the two JSON files.
     },
     "knowledge": ["keyword1", "keyword2"],
     "best_practice": "Related best practice guidance",
-    "gcloud_commands": ["gcloud example command"],
-    "links": ["https://official-docs-link"]
+    "gcloud": "gcloud example command",
+    "docs": "https://official-docs-link"
   }
 }
 ```
@@ -297,6 +299,18 @@ Revealing an answer in retry mode only applies to the current session — **it d
 ## 📜 About the Default Question Bank
 
 The default GCP ACE question bank is sourced from [ExamTopics](https://www.examtopics.com/) community discussions. Explanations were generated with AI assistance and reviewed manually. To replace with your own bank, see the section above.
+
+---
+
+## 🤖 Customize with an AI Agent
+
+Paste this prompt into any AI Agent (Claude, ChatGPT, Cursor, etc.) to convert your question source or generate explanations automatically:
+
+```
+Please refer to this project's structure and JSON formats (questions.json / explanations.json),
+then convert the following question data into compatible format and generate the corresponding explanations.
+[paste your question source here]
+```
 
 ---
 

@@ -151,7 +151,8 @@ python -m http.server 8000
 [
   {
     "id": "T1-Q1",
-    "topic": "Topic 1",
+    "topic": 1,
+    "idx": 1,
     "question": "題目內容",
     "options": {
       "A": "選項 A 內容",
@@ -170,7 +171,8 @@ python -m http.server 8000
 | 欄位 | 必填 | 說明 |
 |------|------|------|
 | `id` | ✅ | 唯一識別碼，建議 `TopicX-QY` 格式 |
-| `topic` | ✅ | 主題分類，用於篩選器 |
+| `topic` | ✅ | 主題編號（數字），介面顯示為「Topic N」，用於篩選器 |
+| `idx` | ✅ | 題目顯示序號（數字），介面右上角顯示用 |
 | `question` | ✅ | 題目內容 |
 | `options` | ✅ | 選項物件（A/B/C/D，可多於或少於四個） |
 | `answer` | ✅ | 正確答案；多選題用逗號分隔，如 `"A,C"` |
@@ -191,8 +193,8 @@ python -m http.server 8000
     },
     "knowledge": ["關鍵字1", "關鍵字2"],
     "best_practice": "相關最佳實踐建議",
-    "gcloud_commands": ["gcloud example command"],
-    "links": ["https://官方文件連結"]
+    "gcloud": "gcloud example command",
+    "docs": "https://官方文件連結"
   }
 }
 ```
@@ -297,6 +299,18 @@ const AI_KEY      = 'your-api-key-here';                           // API 金鑰
 ## 📜 關於預設題庫
 
 預設搭載的 GCP ACE 題庫來自 [ExamTopics](https://www.examtopics.com/) 社群討論，詳解由 AI 輔助整理並人工校對。如需替換，請參考上方「替換成自己的題庫」章節。
+
+---
+
+## 🤖 用 AI Agent 快速客製化
+
+把以下 prompt 丟給任何 AI Agent（Claude、ChatGPT、Cursor 等），讓它直接幫你完成題庫轉換或詳解生成：
+
+```
+請參考這個專案的架構與 JSON 格式（questions.json / explanations.json），
+幫我將以下題目資料轉換成相容的格式，並生成對應的詳解。
+[貼上你的題目來源]
+```
 
 ---
 
