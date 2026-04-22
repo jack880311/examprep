@@ -31,10 +31,8 @@ This framework automates all of the above. Just swap in your own question bank J
 
 ## 📸 Screenshots
 
-### Main Question Bank — with Progress Stats
-![Main Interface](screenshots/01_main.png)
-
-### Expanded Question — Options + Answer Revealed
+### Question Practice Interface — Progress Stats, Answer Options, Answer Reveal
+Each question can be expanded to view options. After answering, the correct answer, explanation, community discussion, notes panel, and AI explanation entry are shown. The top stats bar shows live completion count and bookmark count.
 ![Question Detail](screenshots/02_question_detail.png)
 
 ### Explanation Panel — Correct Answer Analysis + Notes
@@ -43,7 +41,8 @@ This framework automates all of the above. Just swap in your own question bank J
 ### AI Advanced Explanation — Error Analysis
 ![AI Explanation](screenshots/04_ai_explanation.png)
 
-### AI Multi-turn Conversation — Free Q&A
+### AI Multi-turn Conversation — Keep Asking
+AI explanations support **multi-turn conversation** — not just a one-shot analysis. You can follow up on any detail, and the conversation history is saved automatically so you can pick up right where you left off next time you open the same question.
 ![AI Chat](screenshots/05_ai_chat.png)
 
 ### Mock Exam — Session Picker + Timer
