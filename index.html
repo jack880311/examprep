@@ -1103,7 +1103,7 @@
                             </div>
                         </details>
 
-                         <details class="ai-section" ${activeExam ? 'style="display:none"' : ''}>
+                         <details class="ai-section" ${activeExam ? 'style="display:none"' : ''} ${(aiCache[q.id + '_error'] || aiCache[q.id] || (chatHistories[q.id]?.length > 0)) ? 'open' : ''}>
                              <summary>🤖 AI 進階詳解</summary>
                             <div style="padding: 8px 0 4px;">
                                 ${(aiCache[q.id + '_error'] || aiCache[q.id]) ? `
@@ -1178,14 +1178,15 @@
                  html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">下一頁 »</button>`;
              }
 
-             // 手動輸入頁碼
-             html += `<span style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;">
+             // 手動輸入頁碼（獨立一行）
+             html += `<div style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;">
+                 <span style="font-size:12px;color:#666;">跳至頁碼：</span>
                  <input type="number" id="pageJumpInput" min="1" max="${totalPages}" placeholder="頁碼"
-                     style="width:58px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:13px;text-align:center;"
+                     style="width:60px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:13px;text-align:center;"
                      onkeydown="if(event.key==='Enter') goToPage(this.value,${totalPages})">
                  <span style="font-size:12px;color:#666;">/ ${totalPages}</span>
                  <button class="page-btn" onclick="goToPage(document.getElementById('pageJumpInput').value,${totalPages})">GO</button>
-             </span>`;
+             </div>`;
 
              paginationDiv.innerHTML = html;
         }
