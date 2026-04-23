@@ -705,8 +705,7 @@
                 <option value="completed">已完成</option>
                 <option value="bookmarked">已標記</option>
                 <option value="incomplete">未完成</option>
-                <option value="bookmarked_retest">⭐ 重考</option>
-                <option value="wrong_retest">❌ 錯題</option>
+                <option value="wrong">❌ 答錯</option>
             </select>
             <span style="display:inline-flex;align-items:center;gap:4px;">
                 <input type="number" id="jumpIdxInput" placeholder="# 題" min="1"
@@ -718,6 +717,7 @@
             <button class="btn btn-info" onclick="downloadProgress()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="下載進度">📥 匯出</button>
             <button class="btn btn-info" onclick="document.getElementById('importFile').click()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="匯入進度">📤 匯入</button>
             <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importProgress(event)">
+            <button class="btn" style="background:#ff9800;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openRetestPicker()">🔄 重考</button>
             <button class="btn" style="background:#e91e63;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openExamPicker()">🎯 模擬考</button>
         </div>
         <div class="controls" style="padding:4px 15px 10px 15px; gap:8px; align-items:center; flex-wrap:wrap; border-top:none; border-bottom:1px solid #e9ecef;">
@@ -768,6 +768,30 @@
             </div>
         </div>
 
+        <div class="modal-overlay" id="retestPickerModal">
+            <div class="modal-box">
+                <h2>🔄 重考模式</h2>
+                <p style="color:#555;font-size:14px;margin-bottom:16px;">選擇要加入重考的題目來源（可複選）：</p>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+                        <input type="checkbox" id="retestIncludeBookmarked" onchange="updateRetestCount()" style="width:16px;height:16px;">
+                        ⭐ 已標記題
+                        <span id="retestBookmarkedCount" style="color:#888;font-size:12px;"></span>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+                        <input type="checkbox" id="retestIncludeWrong" onchange="updateRetestCount()" style="width:16px;height:16px;">
+                        ❌ 答錯題
+                        <span id="retestWrongCount" style="color:#888;font-size:12px;"></span>
+                    </label>
+                </div>
+                <p id="retestCountLabel" style="font-size:13px;color:#444;font-weight:600;margin-bottom:16px;">請至少勾選一項</p>
+                <div class="modal-footer" style="gap:8px;">
+                    <button class="btn" style="background:#ff9800;color:white;padding:8px 20px;font-size:14px;font-weight:bold;" onclick="startRetest()">開始重考</button>
+                    <button class="btn-modal-close" onclick="closeModal('retestPickerModal')">關閉</button>
+                </div>
+            </div>
+        </div>
+
         <div class="modal-overlay" id="resultsModal">
             <div class="modal-box">
                 <h2>📊 本場考試成績</h2>
@@ -800,6 +824,7 @@
         let userProgress = {};
         let retestMode = false;
         let retestRevealed = new Set();
+        let retestTouched = new Set(); // 本次重考已互動（點選過）的題目
         let noteTimers = {};
         let aiCache = {};
         try { aiCache = JSON.parse(localStorage.getItem('gcp_ai_cache') || '{}'); } catch(e) { aiCache = {}; }
@@ -914,10 +939,11 @@
             const topicFilter = document.getElementById('topicFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
 
-            retestMode = statusFilter === 'bookmarked_retest' || statusFilter === 'wrong_retest';
+            retestMode = false;
             retestRevealed = new Set();
+            retestTouched = new Set();
             const banner = document.getElementById('retestBanner');
-            if (banner) banner.classList.toggle('visible', retestMode);
+            if (banner) banner.classList.remove('visible');
 
             filteredQuestions = allQuestions.filter(q => {
                 const matchSearch = !searchText || 
@@ -935,9 +961,7 @@
                     matchStatus = p?.bookmarked;
                 } else if (statusFilter === 'incomplete') {
                     matchStatus = !p?.completed;
-                } else if (statusFilter === 'bookmarked_retest') {
-                    matchStatus = !!p?.bookmarked;
-                } else if (statusFilter === 'wrong_retest') {
+                } else if (statusFilter === 'wrong') {
                     if (!p || !p.revealed) { matchStatus = false; }
                     else {
                         const correct = q.answer.split('').sort().join('');
@@ -976,11 +1000,13 @@
                 const isMulti = q.answer.length > 1;
                 const correctAnswers = q.answer.split('');
 
-                // 模擬考模式：顯示選取狀態但隱藏已揭曉狀態；重考模式：隱藏選取與揭曉；一般模式：全顯示
+                // 模擬考模式：顯示選取狀態但隱藏已揭曉狀態；重考模式：隱藏舊答案（本次已互動的題保留選取）；一般模式：全顯示
                 const dp = activeExam
                     ? { ...progress, revealed: false }
-                    : (retestMode && !retestRevealed.has(q.id))
+                    : (retestMode && !retestRevealed.has(q.id) && !retestTouched.has(q.id))
                     ? { ...progress, revealed: false, selected: [] }
+                    : (retestMode && !retestRevealed.has(q.id))
+                    ? { ...progress, revealed: false }
                     : progress;
 
                 return `
@@ -1225,6 +1251,9 @@
             } else {
                 userProgress[qid].selected = [option];
             }
+
+            // 重考模式：記錄本次有互動，下次渲染不清空 selected
+            if (retestMode) retestTouched.add(qid);
 
             saveProgress();
             renderQuestions();
@@ -1831,6 +1860,7 @@ ${expText}
 
             retestMode = true;
             retestRevealed = new Set();
+            retestTouched = new Set();
 
             filteredQuestions = allQuestions.slice(session.start, session.end + 1);
             currentPage = 1;
@@ -1907,6 +1937,7 @@ ${expText}
             document.getElementById('examTimerBar').classList.remove('visible');
             retestMode = false;
             retestRevealed = new Set();
+            retestTouched = new Set();
             activeExam = null;
 
             showResults(record, topicStats, session);
@@ -1957,11 +1988,81 @@ ${expText}
             document.getElementById('resultsModal').classList.add('visible');
         }
 
+        function openRetestPicker() {
+            // 計算各類題數
+            const bookmarkedCount = allQuestions.filter(q => userProgress[q.id]?.bookmarked).length;
+            const wrongCount = allQuestions.filter(q => {
+                const p = userProgress[q.id];
+                if (!p || !p.revealed) return false;
+                return q.answer.split('').sort().join('') !== (p.selected || []).sort().join('');
+            }).length;
+            document.getElementById('retestBookmarkedCount').textContent = `（${bookmarkedCount} 題）`;
+            document.getElementById('retestWrongCount').textContent = `（${wrongCount} 題）`;
+            document.getElementById('retestIncludeBookmarked').checked = false;
+            document.getElementById('retestIncludeWrong').checked = false;
+            document.getElementById('retestCountLabel').textContent = '請至少勾選一項';
+            document.getElementById('retestPickerModal').classList.add('active');
+        }
+
+        function updateRetestCount() {
+            const inclBookmarked = document.getElementById('retestIncludeBookmarked').checked;
+            const inclWrong = document.getElementById('retestIncludeWrong').checked;
+            if (!inclBookmarked && !inclWrong) {
+                document.getElementById('retestCountLabel').textContent = '請至少勾選一項';
+                return;
+            }
+            const ids = new Set();
+            allQuestions.forEach(q => {
+                const p = userProgress[q.id];
+                if (inclBookmarked && p?.bookmarked) ids.add(q.id);
+                if (inclWrong && p?.revealed) {
+                    if (q.answer.split('').sort().join('') !== (p.selected || []).sort().join('')) ids.add(q.id);
+                }
+            });
+            document.getElementById('retestCountLabel').textContent = `共 ${ids.size} 題`;
+        }
+
+        function startRetest() {
+            const inclBookmarked = document.getElementById('retestIncludeBookmarked').checked;
+            const inclWrong = document.getElementById('retestIncludeWrong').checked;
+            if (!inclBookmarked && !inclWrong) { alert('請至少勾選一項'); return; }
+
+            const retestQs = allQuestions.filter(q => {
+                const p = userProgress[q.id];
+                const isBookmarked = inclBookmarked && !!p?.bookmarked;
+                const isWrong = inclWrong && p?.revealed &&
+                    q.answer.split('').sort().join('') !== (p.selected || []).sort().join('');
+                return isBookmarked || isWrong;
+            });
+
+            if (retestQs.length === 0) { alert('沒有符合條件的題目'); return; }
+
+            closeModal('retestPickerModal');
+            // 停止進行中的模擬考
+            if (activeExam) {
+                clearInterval(examTimerInterval);
+                document.getElementById('examTimerBar').classList.remove('visible');
+                activeExam = null;
+            }
+            filteredQuestions = retestQs;
+            currentPage = 1;
+            retestMode = true;
+            retestRevealed = new Set();
+            retestTouched = new Set();
+            document.getElementById('statusFilter').value = '';
+            const banner = document.getElementById('retestBanner');
+            if (banner) banner.classList.add('visible');
+            renderQuestions();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function reviewWrongAnswers() {
             closeModal('resultsModal');
-            document.getElementById('statusFilter').value = 'wrong_retest';
-            filterQuestions();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // 直接以「答錯題」模式啟動重考
+            document.getElementById('retestIncludeBookmarked').checked = false;
+            document.getElementById('retestIncludeWrong').checked = true;
+            startRetest();
         }
 
         function exitExamWithConfirm() {

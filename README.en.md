@@ -95,7 +95,7 @@ const AI_KEY      = 'your-api-key-here';
 | 📖 **Interactive Practice** | Answer questions, reveal explanations, auto-save progress |
 | ⭐ **Bookmarks** | Flag important or tricky questions |
 | 📝 **Per-question Notes** | Record your reasoning, included in progress backups |
-| 🔄 **Retry Mode** | Filter bookmarked/wrong questions, hide answers for re-drilling |
+| 🔄 **Retry Mode** | Click "🔄 重考" button, choose bookmarked/wrong questions (multi-select), hide answers for re-drilling |
 | 🎯 **Mock Exam** | Customize questions per session and time limit, auto-split sessions with timer |
 | 🤖 **AI Explanation** | Error analysis + multi-turn free Q&A (requires your own AI API) |
 | 💬 **Community Discussion** | Formatted display of ExamTopics raw discussion threads |
@@ -258,11 +258,7 @@ The system auto-splits all questions into sessions. Click a session card to star
 
 **Notes**: Expand "📝 我的筆記" under any question. Auto-saves 500ms after you stop typing. Included in progress JSON exports. The intended use is to capture your **in-the-moment reasoning** — e.g. "why C over B" or "not sure about this concept, revisit later" — so when you come back to retry, the note tells you exactly why you bookmarked it in the first place.
 
-**Retry Mode** (status filter):
-- **⭐ Bookmarked (Retry)**: Shows bookmarked questions with answers hidden
-- **❌ Wrong (Retry)**: Shows incorrectly answered questions with answers hidden
-
-Revealing an answer in retry mode only applies to the current session — **it does not overwrite saved progress**.
+**Retry Mode**: Click the "🔄 重考" button in the controls bar. In the Modal, check your source(s) — ⭐ Bookmarked questions / ❌ Wrong questions (multi-select) — and hit "開始重考". Answers are hidden and questions are sorted by original index. Revealing an answer only applies to the current session — **it does not overwrite saved progress**.
 
 ---
 
@@ -316,10 +312,12 @@ then convert the following question data into compatible format and generate the
 
 ## 📅 Version History
 
- **Version: 2.9** | Last Updated: 2026-04-23
+ **Version: 2.11** | Last Updated: 2026-04-23
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.11 | 2026-04-23 | Retry mode redesign: new "🔄 重考" button + Modal to freely select ⭐ Bookmarked / ❌ Wrong questions; status filter cleaned up with pure "❌ Wrong" filter option |
+| 2.10 | 2026-04-23 | Fix retest mode option highlight (add retestTouched to track in-session interactions) |
 | 2.9 | 2026-04-23 | Fix exam mode option highlight (retestMode was incorrectly clearing selected state); move page-jump input to its own line |
 | 2.8 | 2026-04-23 | Restore text labels to action buttons (Reset/Export/Import) while maintaining compact layout |
 | 2.7 | 2026-04-23 | Optimize top controls layout: reduce gaps and padding to fit everything on one line |
