@@ -983,7 +983,7 @@
 
                         <div class="options">
                             ${Object.entries(q.options).map(([key, value]) => `
-                                <div class="option ${dp.selected?.includes(key) ? 'selected' : ''} 
+                                <div class="option ${!activeExam && dp.selected?.includes(key) ? 'selected' : ''} 
                                             ${dp.revealed && correctAnswers.includes(key) ? 'correct' : ''}
                                             ${dp.revealed && dp.selected?.includes(key) && !correctAnswers.includes(key) ? 'wrong' : ''}"
                                      onclick="selectOption('${q.id}', '${key}', ${isMulti})">
@@ -993,7 +993,7 @@
                             `).join('')}
                         </div>
 
-                        ${!dp.revealed ? `
+                        ${!dp.revealed && !activeExam ? `
                             <button class="btn btn-primary" onclick="${retestMode ? `revealInRetest('${q.id}')` : `revealAnswer('${q.id}')`}">
                                 顯示答案
                             </button>
@@ -1009,7 +1009,7 @@
                             </div>
                         </details>
 
-                        <details>
+                        <details ${activeExam ? 'style="display:none"' : ''}>
                             <summary>📖 我的詳解${q.explanation ? '' : ' (尚未完成)'}</summary>
                             <div class="explanation">
                                 ${q.explanation ? `
@@ -1068,12 +1068,12 @@
                             </div>
                         </details>
 
-                        <details>
+                        <details ${activeExam ? 'style="display:none"' : ''}>
                             <summary>💬 ExamTopics 社群討論</summary>
                             <div style="padding:6px 0 2px;">${formatComments(q.comments_raw)}</div>
                         </details>
 
-                        <details>
+                        <details ${activeExam ? 'style="display:none"' : ''}>
                             <summary>🔗 原始連結</summary>
                             <div>
                                 <p>題目時間戳記: ${q.timestamp}</p>
@@ -1081,8 +1081,8 @@
                             </div>
                         </details>
 
-                        <details class="ai-section">
-                            <summary>🤖 AI 進階詳解</summary>
+                         <details class="ai-section" ${activeExam ? 'style="display:none"' : ''}>
+                             <summary>🤖 AI 進階詳解</summary>
                             <div style="padding: 8px 0 4px;">
                                 ${(aiCache[q.id + '_error'] || aiCache[q.id]) ? `
                                  <div class="ai-content">${formatAIResponse(aiCache[q.id + '_error'] || aiCache[q.id])}</div>
@@ -1381,7 +1381,7 @@
                     }
 
                     updateStats();
-                    renderQuestions();
+                    filterQuestions(); // 重新套用篩選器並重新渲染（比直接呼叫 renderQuestions 更完整）
                     
                     console.log('✓ 進度已匯入（v' + ver + '）');
                     alert('進度已成功匯入！' + (hasAI ? '\n（含 AI 詳解快取）' : '') + (hasExamHistory ? '\n（含模擬考試歷史）' : ''));
@@ -1558,6 +1558,9 @@ ${expText}
             if (!contentDiv) return;
             const history = chatHistories[qid] || [];
             if (history.length === 0) { contentDiv.innerHTML = ''; return; }
+            // 如果父容器（自由提問區）是隱藏的，自動展開以顯示已匯入的對話記錄
+            const areaDiv = document.getElementById(`ai-custom-area-${qid}`);
+            if (areaDiv && areaDiv.style.display === 'none') areaDiv.style.display = '';
 
             const bubbles = history.map(msg => {
                 const isUser = msg.role === 'user';

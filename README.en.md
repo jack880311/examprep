@@ -316,10 +316,12 @@ then convert the following question data into compatible format and generate the
 
 ## 📅 Version History
 
-**Version: 2.3** | Last Updated: 2026-04-23
+**Version: 2.5** | Last Updated: 2026-04-23
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.5 | 2026-04-23 | Fix: imported AI chat history now displays correctly; import now re-applies active filters |
+| 2.4 | 2026-04-23 | Exam mode: selecting an option shows no visual feedback; explanation/discussion/AI panels hidden; only notes visible |
 | 2.3 | 2026-04-23 | AI free Q&A upgraded to multi-turn chat (bubble UI, chat history save/restore, clear conversation) |
 | 2.2 | 2026-04-23 | Exam session cards show real best score + attempt count + last date; progress export merged into single JSON (includes AI cache, exam history) |
 | 2.1 | 2026-04-22 | AI two-button layout, custom AI exam context, custom exam time/question count, formatted community discussion, bilingual README |
