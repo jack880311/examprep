@@ -714,9 +714,9 @@
                     onkeydown="if(event.key==='Enter') jumpToIdx()">
                 <button class="btn btn-primary" onclick="jumpToIdx()" style="padding:6px 10px;font-size:13px;">GO</button>
             </span>
-            <button class="btn btn-secondary" onclick="resetProgress()" style="padding:6px 10px;font-size:13px;" title="重置進度">🗑️</button>
-            <button class="btn btn-info" onclick="downloadProgress()" style="padding:6px 10px;font-size:13px;" title="下載進度">📥</button>
-            <button class="btn btn-info" onclick="document.getElementById('importFile').click()" style="padding:6px 10px;font-size:13px;" title="匯入進度">📤</button>
+            <button class="btn btn-secondary" onclick="resetProgress()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="重置進度">🗑️ 重置</button>
+            <button class="btn btn-info" onclick="downloadProgress()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="下載進度">📥 匯出</button>
+            <button class="btn btn-info" onclick="document.getElementById('importFile').click()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="匯入進度">📤 匯入</button>
             <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importProgress(event)">
             <button class="btn" style="background:#e91e63;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openExamPicker()">🎯 模擬考</button>
         </div>
