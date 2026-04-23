@@ -703,7 +703,7 @@
             <select class="filter-select" id="statusFilter" style="padding:6px 10px;font-size:13px;">
                 <option value="">全部狀態</option>
                 <option value="completed">已完成</option>
-                <option value="bookmarked">已標記</option>
+                <option value="bookmarked">⭐ 已標記</option>
                 <option value="incomplete">未完成</option>
                 <option value="wrong">❌ 答錯</option>
             </select>
@@ -756,6 +756,21 @@
                         <span class="exam-settings-label">📋 每場題數</span>
                         <input type="number" id="examSizeInput" min="5" max="500" value="60" style="width:70px; padding:4px 8px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px; text-align:center;">
                         <span class="exam-settings-unit">題</span>
+                    </div>
+                    <div class="exam-settings-row">
+                        <span class="exam-settings-label">🎲 隨機出題</span>
+                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                            <input type="checkbox" id="examRandomize" style="width:15px;height:15px;">
+                            <span>開啟後每場隨機抽題</span>
+                        </label>
+                    </div>
+                    <div class="exam-settings-row">
+                        <span class="exam-settings-label">📂 題目來源</span>
+                        <select id="examSourceFilter" style="padding:4px 8px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px;">
+                            <option value="all">全部題目</option>
+                            <option value="bookmarked">⭐ 已標記題</option>
+                            <option value="wrong">❌ 答錯題</option>
+                        </select>
                     </div>
                     <button class="btn-ai" style="padding:5px 14px; font-size:12px; margin-top:4px;" onclick="applyExamSettings()">套用設定</button>
                     <span id="examSettingsSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600; margin-left:6px;">✓ 已套用，場次已更新</span>
@@ -13005,20 +13020,50 @@ ${expText}
         function confirmStartExam(sessionId) {
             const session = examSessions.find(s => s.id === sessionId);
             if (!session) return;
-            const count = session.end - session.start + 1;
+            const randomize = document.getElementById('examRandomize').checked;
+            const sourceFilter = document.getElementById('examSourceFilter').value;
+
+            // 根據來源篩選決定候選題庫
+            let pool;
+            if (sourceFilter === 'bookmarked') {
+                pool = allQuestions.filter(q => userProgress[q.id]?.bookmarked);
+            } else if (sourceFilter === 'wrong') {
+                pool = allQuestions.filter(q => {
+                    const p = userProgress[q.id];
+                    return p?.revealed && q.answer.split('').sort().join('') !== (p.selected || []).sort().join('');
+                });
+            } else {
+                pool = allQuestions;
+            }
+
+            let examQs;
+            if (randomize) {
+                if (pool.length === 0) { alert('沒有符合條件的題目，請調整來源設定。'); return; }
+                const shuffled = [...pool].sort(() => Math.random() - 0.5);
+                examQs = shuffled.slice(0, Math.min(examSessionSize, shuffled.length));
+            } else {
+                examQs = pool.slice(session.start, session.end + 1);
+                if (examQs.length === 0) { alert('沒有符合條件的題目，請調整來源設定。'); return; }
+            }
+
             const mins = Math.round(examDuration / 60);
-            if (!confirm(`開始「${session.name}」？\n\n共 ${count} 題，計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。`)) return;
+            const sourceLabel = sourceFilter === 'bookmarked' ? '⭐ 已標記題' : sourceFilter === 'wrong' ? '❌ 答錯題' : '全部題目';
+            const randomLabel = randomize ? '（隨機抽題）' : '';
+            if (!confirm(`開始「${randomize ? '隨機模擬考' : session.name}」？\n\n來源：${sourceLabel}${randomLabel}\n共 ${examQs.length} 題，計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。`)) return;
             closeModal('examPickerModal');
-            startExam(sessionId);
+            startExam(sessionId, examQs, randomize ? '隨機模擬考' : null);
         }
 
-        function startExam(sessionId) {
+        function startExam(sessionId, customQs, customName) {
             const session = examSessions.find(s => s.id === sessionId);
             if (!session) return;
 
+            const sessionName = customName || session.name;
+            const questions = customQs || allQuestions.slice(session.start, session.end + 1);
+
             activeExam = {
                 sessionId,
-                sessionName: session.name,
+                sessionName,
                 start: session.start,
                 end: session.end,
                 startTime: Date.now(),
@@ -13029,11 +13074,11 @@ ${expText}
             retestRevealed = new Set();
             retestTouched = new Set();
 
-            filteredQuestions = allQuestions.slice(session.start, session.end + 1);
+            filteredQuestions = questions;
             currentPage = 1;
 
             document.getElementById('examTimerBar').classList.add('visible');
-            document.getElementById('timerSessionLabel').textContent = session.name;
+            document.getElementById('timerSessionLabel').textContent = sessionName;
             document.getElementById('retestBanner').classList.remove('visible');
 
             renderQuestions();
@@ -13168,7 +13213,7 @@ ${expText}
             document.getElementById('retestIncludeBookmarked').checked = false;
             document.getElementById('retestIncludeWrong').checked = false;
             document.getElementById('retestCountLabel').textContent = '請至少勾選一項';
-            document.getElementById('retestPickerModal').classList.add('active');
+            document.getElementById('retestPickerModal').classList.add('visible');
         }
 
         function updateRetestCount() {

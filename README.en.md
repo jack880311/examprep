@@ -96,7 +96,7 @@ const AI_KEY      = 'your-api-key-here';
 | ⭐ **Bookmarks** | Flag important or tricky questions |
 | 📝 **Per-question Notes** | Record your reasoning, included in progress backups |
 | 🔄 **Retry Mode** | Click "🔄 重考" button, choose bookmarked/wrong questions (multi-select), hide answers for re-drilling |
-| 🎯 **Mock Exam** | Customize questions per session and time limit, auto-split sessions with timer |
+| 🎯 **Mock Exam** | Customize questions per session and time limit; 🎲 randomize questions; 📂 filter source (all/bookmarked/wrong) |
 | 🤖 **AI Explanation** | Error analysis + multi-turn free Q&A (requires your own AI API) |
 | 💬 **Community Discussion** | Formatted display of ExamTopics raw discussion threads |
 | 💾 **Progress Management** | Auto-save to localStorage; export/import single JSON (answers, notes, AI cache, exam history) |
@@ -249,8 +249,10 @@ The control bar has an **🤖 AI Exam Context** field, defaulting to `GCP Associ
 Click "🎯 模擬考試" to enter exam mode. You can customize:
 - **Time limit** (minutes, default 120)
 - **Questions per session** (default 60)
+- **🎲 Randomize**: When enabled, questions are randomly drawn from the selected source pool instead of fixed session ranges
+- **📂 Source filter**: All questions / ⭐ Bookmarked / ❌ Wrong answers (great combined with randomize)
 
-The system auto-splits all questions into sessions. Click a session card to start. The timer auto-submits when time runs out, and shows per-topic accuracy analysis and exam history.
+The system auto-splits all questions into sessions. Click a session card to start (with randomize on, questions are drawn from the selected pool). The timer auto-submits when time runs out, and shows per-topic accuracy analysis and exam history.
 
 ---
 
@@ -312,10 +314,11 @@ then convert the following question data into compatible format and generate the
 
 ## 📅 Version History
 
- **Version: 2.11** | Last Updated: 2026-04-23
+ **Version: 2.12** | Last Updated: 2026-04-23
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.12 | 2026-04-23 | Fix 🔄 retest button not responding (modal class mismatch); ⭐ icon added to "Bookmarked" filter; mock exam adds 🎲 randomize and 📂 source filter (all/bookmarked/wrong) |
 | 2.11 | 2026-04-23 | Retry mode redesign: new "🔄 重考" button + Modal to freely select ⭐ Bookmarked / ❌ Wrong questions; status filter cleaned up with pure "❌ Wrong" filter option |
 | 2.10 | 2026-04-23 | Fix retest mode option highlight (add retestTouched to track in-session interactions) |
 | 2.9 | 2026-04-23 | Fix exam mode option highlight (retestMode was incorrectly clearing selected state); move page-jump input to its own line |
