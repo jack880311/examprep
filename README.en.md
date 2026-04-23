@@ -2,7 +2,7 @@
 
 **English** | [繁體中文](./README.md)
 
-A pure-frontend, zero-dependency exam practice framework. Prepare your questions and explanations in JSON format and get a full interactive practice interface — progress tracking, notes, retry mode, customizable mock exam timer, and AI-powered personalized explanations.
+A pure-frontend, zero-dependency exam practice framework. Prepare your questions and explanations in JSON format and get a full interactive practice interface — progress tracking, notes, weak-point drill mode, customizable mock exam timer, and AI-powered personalized explanations.
 
 > The framework is exam-agnostic and works with any question bank that can be organized into JSON format.
 
@@ -23,7 +23,7 @@ So I built one.
 3. **Take notes** — record "why C, not B" reasoning under each question
 4. **AI explanation** — after a wrong answer, ask AI to break down the mistake, or ask follow-up questions like "how would this Service Account pattern work in production?"
 5. **Mock exam** — set 60 questions / 2 hours to simulate real exam pressure
-6. **Retry mode** — the night before, drill only bookmarked and wrong questions
+6. **Weak-point drill** — the night before, drill only bookmarked and wrong questions (no timer)
 
 This framework automates all of the above. Just swap in your own question bank JSON and you're ready to use the same system for any exam.
 
@@ -84,7 +84,7 @@ const AI_MODEL    = 'gemini-3-flash-preview';
 const AI_KEY      = 'your-api-key-here';
 ```
 
-> ℹ️ All other features work fine without an AI API — practice mode, mock exams, notes, retry mode. AI explanations are an optional add-on.
+> ℹ️ All other features work fine without an AI API — practice mode, mock exams, notes, weak-point drill. AI explanations are an optional add-on.
 
 ---
 
@@ -95,8 +95,8 @@ const AI_KEY      = 'your-api-key-here';
 | 📖 **Interactive Practice** | Answer questions, reveal explanations, auto-save progress |
 | ⭐ **Bookmarks** | Flag important or tricky questions |
 | 📝 **Per-question Notes** | Record your reasoning, included in progress backups |
-| 🔄 **Retry Mode** | Click "🔄 重考" button, choose bookmarked/wrong questions (multi-select), hide answers for re-drilling |
-| 🎯 **Mock Exam** | Customize questions per session and time limit; 🎲 randomize questions; 📂 filter source (all/bookmarked/wrong) |
+| 🔍 **Weak-Point Drill** | Click "🔍 弱點練習" button, choose bookmarked/wrong questions (multi-select), hide answers for re-drilling (no timer) |
+| 🎯 **Mock Exam** | Customize questions per session and exam duration; supports 🎲 randomize and 📂 source multi-select (all/bookmarked/wrong can be combined for union pool) |
 | 🤖 **AI Explanation** | Error analysis + multi-turn free Q&A (requires your own AI API) |
 | 💬 **Community Discussion** | Formatted display of ExamTopics raw discussion threads |
 | 💾 **Progress Management** | Auto-save to localStorage; export/import single JSON (answers, notes, AI cache, exam history) |
@@ -256,11 +256,11 @@ The system auto-splits all questions into sessions. Click a session card to star
 
 ---
 
-## 📝 Notes & Retry Mode
+## 📝 Notes & Weak-Point Drill
 
 **Notes**: Expand "📝 我的筆記" under any question. Auto-saves 500ms after you stop typing. Included in progress JSON exports. The intended use is to capture your **in-the-moment reasoning** — e.g. "why C over B" or "not sure about this concept, revisit later" — so when you come back to retry, the note tells you exactly why you bookmarked it in the first place.
 
-**Retry Mode**: Click the "🔄 重考" button in the controls bar. In the Modal, check your source(s) — ⭐ Bookmarked questions / ❌ Wrong questions (multi-select) — and hit "開始重考". Answers are hidden and questions are sorted by original index. Revealing an answer only applies to the current session — **it does not overwrite saved progress**.
+**Weak-Point Drill**: Click the "🔍 弱點練習" button in the controls bar. In the Modal, check your source(s) — ⭐ Bookmarked questions / ❌ Wrong questions (multi-select for union) — and hit "開始練習". Answers are hidden, no timer, ideal for pre-exam targeted review. Questions are sorted by original index. Revealing an answer only applies to the current session — **it does not overwrite saved progress**.
 
 ---
 
@@ -314,10 +314,11 @@ then convert the following question data into compatible format and generate the
 
 ## 📅 Version History
 
- **Version: 2.12** | Last Updated: 2026-04-23
+ **Version: 2.13** | Last Updated: 2026-04-23
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.13 | 2026-04-23 | Rename 🔄 Retry to 🔍 Weak-Point Drill (button/Banner/Modal); mock exam source filter changed to multi-select checkboxes (all/bookmarked/wrong, union pool) |
 | 2.12 | 2026-04-23 | Fix 🔄 retest button not responding (modal class mismatch); ⭐ icon added to "Bookmarked" filter; mock exam adds 🎲 randomize and 📂 source filter (all/bookmarked/wrong) |
 | 2.11 | 2026-04-23 | Retry mode redesign: new "🔄 重考" button + Modal to freely select ⭐ Bookmarked / ❌ Wrong questions; status filter cleaned up with pure "❌ Wrong" filter option |
 | 2.10 | 2026-04-23 | Fix retest mode option highlight (add retestTouched to track in-session interactions) |
@@ -330,6 +331,6 @@ then convert the following question data into compatible format and generate the
 | 2.3 | 2026-04-23 | AI free Q&A upgraded to multi-turn chat (bubble UI, chat history save/restore, clear conversation) |
 | 2.2 | 2026-04-23 | Exam session cards show real best score + attempt count + last date; progress export merged into single JSON (includes AI cache, exam history) |
 | 2.1 | 2026-04-22 | AI two-button layout, custom AI exam context, custom exam time/question count, formatted community discussion, bilingual README |
-| 2.0 | 2026-04-22 | Notes panel, retry mode, AI explanations, mock exam (6 sessions) |
+| 2.0 | 2026-04-22 | Notes panel, weak-point drill mode, AI explanations, mock exam (6 sessions) |
 | 1.1 | 2026-04-22 | Expanded question bank, fixed HTML injection bug |
 | 1.0 | 2026-04-21 | Initial release |

@@ -717,7 +717,7 @@
             <button class="btn btn-info" onclick="downloadProgress()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="下載進度">📥 匯出</button>
             <button class="btn btn-info" onclick="document.getElementById('importFile').click()" style="padding:6px 10px;font-size:13px;white-space:nowrap;" title="匯入進度">📤 匯入</button>
             <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importProgress(event)">
-            <button class="btn" style="background:#ff9800;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openRetestPicker()">🔄 重考</button>
+            <button class="btn" style="background:#ff9800;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openRetestPicker()">🔍 弱點練習</button>
             <button class="btn" style="background:#e91e63;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openExamPicker()">🎯 模擬考</button>
         </div>
         <div class="controls" style="padding:4px 15px 10px 15px; gap:8px; align-items:center; flex-wrap:wrap; border-top:none; border-bottom:1px solid #e9ecef;">
@@ -741,7 +741,7 @@
             </div>
         </div>
 
-        <div class="retest-banner" id="retestBanner">🔄 重考模式：題目答案已隱藏，請重新作答後再顯示答案</div>
+        <div class="retest-banner" id="retestBanner">🔍 弱點練習模式 — 答案已隱藏，不計時，適合考前複習查漏補缺</div>
 
         <div class="modal-overlay" id="examPickerModal">
             <div class="modal-box">
@@ -766,11 +766,20 @@
                     </div>
                     <div class="exam-settings-row">
                         <span class="exam-settings-label">📂 題目來源</span>
-                        <select id="examSourceFilter" style="padding:4px 8px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px;">
-                            <option value="all">全部題目</option>
-                            <option value="bookmarked">⭐ 已標記題</option>
-                            <option value="wrong">❌ 答錯題</option>
-                        </select>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                            <label style="font-size:13px;cursor:pointer;">
+                                <input type="checkbox" id="examSourceAll" checked onchange="onExamSourceChange('all', this)">
+                                全部題目
+                            </label>
+                            <label style="font-size:13px;cursor:pointer;">
+                                <input type="checkbox" id="examSourceBookmarked" onchange="onExamSourceChange('bookmarked', this)">
+                                ⭐ 已標記題
+                            </label>
+                            <label style="font-size:13px;cursor:pointer;">
+                                <input type="checkbox" id="examSourceWrong" onchange="onExamSourceChange('wrong', this)">
+                                ❌ 答錯題
+                            </label>
+                        </div>
                     </div>
                     <button class="btn-ai" style="padding:5px 14px; font-size:12px; margin-top:4px;" onclick="applyExamSettings()">套用設定</button>
                     <span id="examSettingsSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600; margin-left:6px;">✓ 已套用，場次已更新</span>
@@ -785,8 +794,8 @@
 
         <div class="modal-overlay" id="retestPickerModal">
             <div class="modal-box">
-                <h2>🔄 重考模式</h2>
-                <p style="color:#555;font-size:14px;margin-bottom:16px;">選擇要加入重考的題目來源（可複選）：</p>
+                <h2>🔍 弱點練習</h2>
+                <p style="color:#555;font-size:14px;margin-bottom:16px;">選擇題目來源（可複選），系統將隱藏答案讓你重新作答。不計時，適合考前針對弱點複習。</p>
                 <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
                     <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
                         <input type="checkbox" id="retestIncludeBookmarked" onchange="updateRetestCount()" style="width:16px;height:16px;">
@@ -801,7 +810,7 @@
                 </div>
                 <p id="retestCountLabel" style="font-size:13px;color:#444;font-weight:600;margin-bottom:16px;">請至少勾選一項</p>
                 <div class="modal-footer" style="gap:8px;">
-                    <button class="btn" style="background:#ff9800;color:white;padding:8px 20px;font-size:14px;font-weight:bold;" onclick="startRetest()">開始重考</button>
+                    <button class="btn" style="background:#ff9800;color:white;padding:8px 20px;font-size:14px;font-weight:bold;" onclick="startRetest()">開始練習</button>
                     <button class="btn-modal-close" onclick="closeModal('retestPickerModal')">關閉</button>
                 </div>
             </div>
@@ -13008,11 +13017,33 @@ ${expText}
             examSessions = sessions;
         }
 
+        function onExamSourceChange(changed, el) {
+            if (changed === 'all') {
+                if (el.checked) {
+                    document.getElementById('examSourceBookmarked').checked = false;
+                    document.getElementById('examSourceWrong').checked = false;
+                }
+            } else {
+                if (el.checked) {
+                    document.getElementById('examSourceAll').checked = false;
+                } else {
+                    // 若兩個子選項都未勾選，自動回到「全部題目」
+                    const bk = document.getElementById('examSourceBookmarked').checked;
+                    const wr = document.getElementById('examSourceWrong').checked;
+                    if (!bk && !wr) document.getElementById('examSourceAll').checked = true;
+                }
+            }
+        }
+
         function openExamPicker() {
             // 同步設定輸入框的當前值
             document.getElementById('examDurationInput').value = Math.round(examDuration / 60);
             document.getElementById('examSizeInput').value = examSessionSize;
             document.getElementById('examSettingsSaved').style.display = 'none';
+            // 同步 checkboxes：預設顯示「全部題目」勾選
+            document.getElementById('examSourceAll').checked = true;
+            document.getElementById('examSourceBookmarked').checked = false;
+            document.getElementById('examSourceWrong').checked = false;
             openExamPickerGrid();
             document.getElementById('examPickerModal').classList.add('visible');
         }
@@ -13021,19 +13052,22 @@ ${expText}
             const session = examSessions.find(s => s.id === sessionId);
             if (!session) return;
             const randomize = document.getElementById('examRandomize').checked;
-            const sourceFilter = document.getElementById('examSourceFilter').value;
+            const srcAll        = document.getElementById('examSourceAll').checked;
+            const srcBookmarked = document.getElementById('examSourceBookmarked').checked;
+            const srcWrong      = document.getElementById('examSourceWrong').checked;
 
-            // 根據來源篩選決定候選題庫
+            // 根據來源篩選決定候選題庫（多選取聯集）
             let pool;
-            if (sourceFilter === 'bookmarked') {
-                pool = allQuestions.filter(q => userProgress[q.id]?.bookmarked);
-            } else if (sourceFilter === 'wrong') {
-                pool = allQuestions.filter(q => {
+            if (srcAll || (!srcBookmarked && !srcWrong)) {
+                pool = allQuestions;
+            } else {
+                const ids = new Set();
+                if (srcBookmarked) allQuestions.filter(q => userProgress[q.id]?.bookmarked).forEach(q => ids.add(q.id));
+                if (srcWrong) allQuestions.filter(q => {
                     const p = userProgress[q.id];
                     return p?.revealed && q.answer.split('').sort().join('') !== (p.selected || []).sort().join('');
-                });
-            } else {
-                pool = allQuestions;
+                }).forEach(q => ids.add(q.id));
+                pool = allQuestions.filter(q => ids.has(q.id));
             }
 
             let examQs;
@@ -13047,7 +13081,10 @@ ${expText}
             }
 
             const mins = Math.round(examDuration / 60);
-            const sourceLabel = sourceFilter === 'bookmarked' ? '⭐ 已標記題' : sourceFilter === 'wrong' ? '❌ 答錯題' : '全部題目';
+            const sourceParts = [];
+            if (srcAll || (!srcBookmarked && !srcWrong)) { sourceParts.push('全部題目'); }
+            else { if (srcBookmarked) sourceParts.push('⭐ 已標記題'); if (srcWrong) sourceParts.push('❌ 答錯題'); }
+            const sourceLabel = sourceParts.join(' + ');
             const randomLabel = randomize ? '（隨機抽題）' : '';
             if (!confirm(`開始「${randomize ? '隨機模擬考' : session.name}」？\n\n來源：${sourceLabel}${randomLabel}\n共 ${examQs.length} 題，計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。`)) return;
             closeModal('examPickerModal');
