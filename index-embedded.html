@@ -54,13 +54,31 @@
         }
 
         .controls {
-            padding: 20px 30px;
+            padding: 10px 15px;
             background: #f8f9fa;
             border-bottom: 1px solid #e9ecef;
             display: flex;
-            gap: 15px;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 120px;
+            padding: 6px 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .filter-select {
+            padding: 6px 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
         }
 
         .search-box {
@@ -677,39 +695,38 @@
             </div>
         </div>
 
-        <div class="controls">
-            <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜尋題目內容...">
-            <select class="filter-select" id="topicFilter">
+        <div class="controls" style="padding:10px 15px;gap:8px;">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 搜尋題幹..." style="min-width:120px;padding:6px 10px;font-size:13px;">
+            <select class="filter-select" id="topicFilter" style="padding:6px 10px;font-size:13px;">
                 <option value="">所有主題</option>
             </select>
-            <select class="filter-select" id="statusFilter">
+            <select class="filter-select" id="statusFilter" style="padding:6px 10px;font-size:13px;">
                 <option value="">全部狀態</option>
                 <option value="completed">已完成</option>
                 <option value="bookmarked">已標記</option>
                 <option value="incomplete">未完成</option>
-                <option value="bookmarked_retest">⭐ 已標記（重考）</option>
-                <option value="wrong_retest">❌ 答錯（重考）</option>
+                <option value="bookmarked_retest">⭐ 重考</option>
+                <option value="wrong_retest">❌ 錯題</option>
             </select>
             <span style="display:inline-flex;align-items:center;gap:4px;">
-                <input type="number" id="jumpIdxInput" placeholder="跳至 # 題" min="1"
-                    style="width:100px;padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;"
+                <input type="number" id="jumpIdxInput" placeholder="# 題" min="1"
+                    style="width:55px;padding:6px 6px;border:1px solid #ccc;border-radius:4px;font-size:13px;"
                     onkeydown="if(event.key==='Enter') jumpToIdx()">
-                <button class="btn btn-primary" onclick="jumpToIdx()">跳至</button>
+                <button class="btn btn-primary" onclick="jumpToIdx()" style="padding:6px 10px;font-size:13px;">GO</button>
             </span>
-            <button class="btn btn-secondary" onclick="resetProgress()">重置進度</button>
-            <button class="btn btn-info" onclick="downloadProgress()">📥 下載進度</button>
-            <button class="btn btn-info" onclick="document.getElementById('importFile').click()">📤 匯入進度</button>
+            <button class="btn btn-secondary" onclick="resetProgress()" style="padding:6px 10px;font-size:13px;" title="重置進度">🗑️</button>
+            <button class="btn btn-info" onclick="downloadProgress()" style="padding:6px 10px;font-size:13px;" title="下載進度">📥</button>
+            <button class="btn btn-info" onclick="document.getElementById('importFile').click()" style="padding:6px 10px;font-size:13px;" title="匯入進度">📤</button>
             <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importProgress(event)">
-            <button class="btn" style="background:#e91e63;color:white;" onclick="openExamPicker()">🎯 模擬考試</button>
+            <button class="btn" style="background:#e91e63;color:white;padding:6px 12px;font-size:13px;font-weight:bold;white-space:nowrap;" onclick="openExamPicker()">🎯 模擬考</button>
         </div>
-        <div class="controls" style="padding-top:6px; padding-bottom:8px; gap:6px; align-items:center; flex-wrap:wrap;">
-            <label style="font-size:12px; color:#6c757d; white-space:nowrap;">🤖 AI 考試情境：</label>
+        <div class="controls" style="padding:4px 15px 10px 15px; gap:8px; align-items:center; flex-wrap:wrap; border-top:none; border-bottom:1px solid #e9ecef;">
+            <label style="font-size:12px; color:#6c757d; white-space:nowrap; margin-right:2px;">🤖 AI 考試情境：</label>
             <input type="text" id="examContextInput" value="" placeholder="GCP Associate Cloud Engineer (ACE)"
-                style="flex:1; min-width:220px; max-width:400px; padding:5px 10px; border:1px solid #c8a0e8; border-radius:6px; font-size:13px;"
+                style="flex:1; min-width:200px; max-width:350px; padding:4px 8px; border:1px solid #c8a0e8; border-radius:4px; font-size:12px;"
                 onkeydown="if(event.key==='Enter') saveExamContext()">
-            <button class="btn" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:5px 12px;font-size:12px;" onclick="saveExamContext()">儲存</button>
-            <span id="examContextSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600;">✓ 已儲存</span>
-            <span style="font-size:11px; color:#adb5bd;">（AI 詳解 prompt 會帶入此情境，預設為 GCP ACE）</span>
+            <button class="btn" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:4px 10px;font-size:12px;border-radius:4px;" onclick="saveExamContext()">儲存</button>
+            <span id="examContextSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600; margin-left:4px;">✓</span>
         </div>
 
         <div class="exam-timer-bar" id="examTimerBar">

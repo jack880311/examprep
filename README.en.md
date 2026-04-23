@@ -316,10 +316,11 @@ then convert the following question data into compatible format and generate the
 
 ## 📅 Version History
 
-**Version: 2.6** | Last Updated: 2026-04-23
+**Version: 2.7** | Last Updated: 2026-04-23
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.7 | 2026-04-23 | Optimize top controls layout: reduce gaps and padding to fit everything on one line |
 | 2.6 | 2026-04-23 | Fix exam mode selected-option highlight; jump-to-question now uses # idx with number input; pagination adds manual page input |
 | 2.5 | 2026-04-23 | Fix: imported AI chat history now displays correctly; import now re-applies active filters |
 | 2.4 | 2026-04-23 | Exam mode: selecting an option shows no visual feedback; explanation/discussion/AI panels hidden; only notes visible |
