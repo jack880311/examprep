@@ -690,7 +690,12 @@
                 <option value="bookmarked_retest">⭐ 已標記（重考）</option>
                 <option value="wrong_retest">❌ 答錯（重考）</option>
             </select>
-            <button class="btn btn-primary" onclick="jumpToQuestion()">跳至題號</button>
+            <span style="display:inline-flex;align-items:center;gap:4px;">
+                <input type="number" id="jumpIdxInput" placeholder="跳至 # 題" min="1"
+                    style="width:100px;padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;"
+                    onkeydown="if(event.key==='Enter') jumpToIdx()">
+                <button class="btn btn-primary" onclick="jumpToIdx()">跳至</button>
+            </span>
             <button class="btn btn-secondary" onclick="resetProgress()">重置進度</button>
             <button class="btn btn-info" onclick="downloadProgress()">📥 下載進度</button>
             <button class="btn btn-info" onclick="document.getElementById('importFile').click()">📤 匯入進度</button>
@@ -12150,7 +12155,7 @@
 
                         <div class="options">
                             ${Object.entries(q.options).map(([key, value]) => `
-                                <div class="option ${!activeExam && dp.selected?.includes(key) ? 'selected' : ''} 
+                                <div class="option ${dp.selected?.includes(key) ? 'selected' : ''} 
                                             ${dp.revealed && correctAnswers.includes(key) ? 'correct' : ''}
                                             ${dp.revealed && dp.selected?.includes(key) && !correctAnswers.includes(key) ? 'wrong' : ''}"
                                      onclick="selectOption('${q.id}', '${key}', ${isMulti})">
@@ -12319,20 +12324,37 @@
                 html += `<button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
             }
 
-            if (currentPage < totalPages) {
-                html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">下一頁 »</button>`;
-            }
+             if (currentPage < totalPages) {
+                 html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">下一頁 »</button>`;
+             }
 
-            paginationDiv.innerHTML = html;
+             // 手動輸入頁碼
+             html += `<span style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;">
+                 <input type="number" id="pageJumpInput" min="1" max="${totalPages}" placeholder="頁碼"
+                     style="width:58px;padding:4px 6px;border:1px solid #ccc;border-radius:4px;font-size:13px;text-align:center;"
+                     onkeydown="if(event.key==='Enter') goToPage(this.value,${totalPages})">
+                 <span style="font-size:12px;color:#666;">/ ${totalPages}</span>
+                 <button class="page-btn" onclick="goToPage(document.getElementById('pageJumpInput').value,${totalPages})">GO</button>
+             </span>`;
+
+             paginationDiv.innerHTML = html;
         }
 
-        // 切換頁面
-        function changePage(page) {
-            currentPage = page;
-            renderQuestions();
-            renderPagination();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+         // 切換頁面
+         function changePage(page) {
+             currentPage = page;
+             renderQuestions();
+             renderPagination();
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+         }
+
+         // 手動輸入頁碼跳轉
+         function goToPage(value, totalPages) {
+             const page = parseInt(value);
+             if (!page || page < 1 || page > totalPages) return;
+             changePage(page);
+         }
+
 
         // 選擇選項
         function selectOption(qid, option, isMulti) {
@@ -12418,36 +12440,40 @@
             }
         }
 
-        // 跳至題號
-        function jumpToQuestion() {
-            const qid = prompt('請輸入題目 ID (例如: T1-Q246):');
-            if (!qid) return;
+         // 跳至題號（以 # idx 為準）
+         function jumpToIdx() {
+             const inputEl = document.getElementById('jumpIdxInput');
+             const idxNum = parseInt(inputEl.value);
+             if (!idxNum) return;
 
-            const idx = allQuestions.findIndex(q => q.id.toUpperCase() === qid.toUpperCase());
-            if (idx === -1) {
-                alert('找不到該題目！');
-                return;
-            }
+             const q = allQuestions.find(q => q.idx === idxNum);
+             if (!q) {
+                 alert(`找不到第 #${idxNum} 題！`);
+                 return;
+             }
 
-            // 重置篩選
-            document.getElementById('searchBox').value = '';
-            document.getElementById('topicFilter').value = '';
-            document.getElementById('statusFilter').value = '';
-            filterQuestions();
+             // 重置篩選，確保該題可見
+             document.getElementById('searchBox').value = '';
+             document.getElementById('topicFilter').value = '';
+             document.getElementById('statusFilter').value = '';
+             filterQuestions();
 
-            // 計算頁數
-            const targetPage = Math.ceil((idx + 1) / questionsPerPage);
-            changePage(targetPage);
+             // 計算在 filteredQuestions 中的位置
+             const pos = filteredQuestions.findIndex(fq => fq.id === q.id);
+             const targetPage = Math.ceil((pos + 1) / questionsPerPage);
+             changePage(targetPage);
 
-            // 滾動到題目
-            setTimeout(() => {
-                const card = document.querySelector(`[data-qid="${qid}"]`);
-                if (card) {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    card.style.animation = 'pulse 1s ease-in-out';
-                }
-            }, 100);
-        }
+             // 滾動並高亮
+             setTimeout(() => {
+                 const card = document.querySelector(`[data-qid="${q.id}"]`);
+                 if (card) {
+                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                     card.style.animation = 'pulse 1s ease-in-out';
+                 }
+             }, 100);
+
+             inputEl.value = '';
+         }
 
         // 重置進度
         function resetProgress() {
