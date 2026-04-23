@@ -12143,8 +12143,10 @@
                 const isMulti = q.answer.length > 1;
                 const correctAnswers = q.answer.split('');
 
-                // 重考模式：視覺上隱藏已選/已顯示狀態，除非本次已手動揭曉
-                const dp = (retestMode && !retestRevealed.has(q.id))
+                // 模擬考模式：顯示選取狀態但隱藏已揭曉狀態；重考模式：隱藏選取與揭曉；一般模式：全顯示
+                const dp = activeExam
+                    ? { ...progress, revealed: false }
+                    : (retestMode && !retestRevealed.has(q.id))
                     ? { ...progress, revealed: false, selected: [] }
                     : progress;
 
@@ -12270,7 +12272,7 @@
                             </div>
                         </details>
 
-                         <details class="ai-section" ${activeExam ? 'style="display:none"' : ''} ${(aiCache[q.id + '_error'] || aiCache[q.id] || (chatHistories[q.id]?.length > 0)) ? 'open' : ''}>
+                         <details class="ai-section" ${activeExam ? 'style="display:none"' : ''}>
                              <summary>🤖 AI 進階詳解</summary>
                             <div style="padding: 8px 0 4px;">
                                 ${(aiCache[q.id + '_error'] || aiCache[q.id]) ? `

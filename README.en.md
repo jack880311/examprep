@@ -320,7 +320,7 @@ then convert the following question data into compatible format and generate the
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 2.9 | 2026-04-23 | Move page-jump input to its own line; auto-expand AI section on import when cached content exists; confirm exam mode option highlight works correctly |
+| 2.9 | 2026-04-23 | Fix exam mode option highlight (retestMode was incorrectly clearing selected state); move page-jump input to its own line |
 | 2.8 | 2026-04-23 | Restore text labels to action buttons (Reset/Export/Import) while maintaining compact layout |
 | 2.7 | 2026-04-23 | Optimize top controls layout: reduce gaps and padding to fit everything on one line |
 | 2.6 | 2026-04-23 | Fix exam mode selected-option highlight; jump-to-question now uses # idx with number input; pagination adds manual page input |
