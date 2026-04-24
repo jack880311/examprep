@@ -12447,7 +12447,26 @@
             if (retestMode) retestTouched.add(qid);
 
             saveProgress();
-            renderQuestions();
+
+            // 只更新當題選項的樣式，避免整個列表重新渲染導致其他題的展開狀態（筆記等）被重置
+            const card = document.querySelector(`.question-card[data-qid="${qid}"]`);
+            if (!card) { renderQuestions(); return; }
+
+            const q = allQuestions.find(q => q.id === qid);
+            if (!q) { renderQuestions(); return; }
+
+            const currentSelected = userProgress[qid]?.selected || [];
+            const isRevealed = !!userProgress[qid]?.revealed;
+            const correctAnswers = q.answer.split('');
+            const optionEls = card.querySelectorAll('.option');
+            optionEls.forEach(el => {
+                const key = el.querySelector('.option-label').textContent.replace('.', '').trim();
+                el.classList.toggle('selected', currentSelected.includes(key));
+                if (isRevealed) {
+                    el.classList.toggle('correct', correctAnswers.includes(key));
+                    el.classList.toggle('wrong', currentSelected.includes(key) && !correctAnswers.includes(key));
+                }
+            });
         }
 
         // 顯示答案
