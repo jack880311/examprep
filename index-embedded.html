@@ -8859,20 +8859,20 @@
     "docs": "https://cloud.google.com/sql/docs/mysql/import-export/exporting"
   },
   "T17-Q17": {
-    "correct": "正解為 A。Cloud SQL 的匯出（Export）功能會產生獨立的數據檔案。存儲在 Archive 等級的儲存桶中能以極低的成本滿足長達三年的審計需求。匯出檔是自包含的，不依賴於原始實例的存續，這對於長期法律保留（Legal Hold）最為可靠。",
+    "correct": "正解為 C。要針對特定的日誌錯誤（例如權限不足）設定主動通知，標準的做法是在 Cloud Logging 建立自訂的「日誌型指標 (log-based metric)」，並以此指標為基礎在 Cloud Monitoring 建立 Alerting Policy。這樣當錯誤再次發生時，系統就會自動發送通知。",
     "wrong": {
-      "B": "自動備份由 Cloud SQL 系統代管，無法直接移動至使用者的 GCS 儲存桶。且備份有保留期限限制，無法滿足長達三年的保留要求。選項邏輯在技術上不可行。",
-      "C": "隨需備份雖然可隨時建立，但它仍儲存在 Cloud SQL 服務內部，並非以檔案形式存放在 Archive 等級的 GCS 中。這無法有效利用 Archive 類別的低價優勢。",
-      "D": "雖然匯出到 GCS 的方向正確，但 Coldline 的存儲費用高於 Archive 類別。對於預期存儲三年且幾乎不存取的審計數據，使用 Archive 類別才是最具成本效益的選擇。"
+      "A": "在 Log Viewer 中過濾日誌只能讓你「手動」查看，並無法達到系統「主動通知」的目的。",
+      "B": "匯出至 BigQuery 並建立 Data Studio 儀表板是用於歷史資料分析，無法提供即時的主動警示 (Alert)。",
+      "D": "直接授予 Service Account 「Project Owner」角色嚴重違反最低權限原則 (Least Privilege)，這是一個巨大的安全漏洞。"
     },
     "knowledge": [
-      "Cloud SQL Exporting Data",
-      "Storage Classes Comparison",
-      "Data Archiving Strategies"
+      "Log-based metrics",
+      "Cloud Monitoring Alerting Policy",
+      "Principle of Least Privilege"
     ],
-    "best_practice": "應利用 Cloud Functions 定時執行匯出任務，並將匯出檔案加上日期標籤後存入已開啟鎖定（Bucket Lock）的儲存桶中，以防止數據被意外刪除或竄改。",
-    "commands": "gcloud sql export sql [INSTANCE] gs://[BUCKET]/backup.sql --database=[DB]",
-    "docs": "https://cloud.google.com/sql/docs/mysql/import-export/exporting"
+    "best_practice": "當遇到權限不足的錯誤時，應該精確找出缺少的特定權限並授予對應的角色，而非直接給予 Owner。同時應建立日誌型指標與警示，以便未來主動監控類似異常。",
+    "commands": "gcloud logging metrics create error_metric --description=\"Track specific errors\" --log-filter=\"severity=ERROR\"",
+    "docs": "https://cloud.google.com/logging/docs/logs-based-metrics"
   },
   "T17-Q18": {
     "correct": "正解為 C。Cloud Spanner 是一項完全託管、具備強式一致性（Strong Consistency）且可全球擴展的關聯式資料庫服務。針對需要全球同步狀態、低延遲存取且維持 SQL 結構的金融交易應用，Spanner 的多區域配置能提供橫跨多洲的讀寫能力，並確保所有客戶看到完全相同的資料狀態。",
@@ -12021,6 +12021,8 @@
         try { aiCache = JSON.parse(localStorage.getItem('gcp_ai_cache') || '{}'); } catch(e) { aiCache = {}; }
         // 多輪對話歷史（key = qid，value = [{role, content}, ...]），從 aiCache 還原
         let chatHistories = {};
+        // AI 請求路由可視化狀態（key = qid）
+        let aiTraceState = {};
         for (const key of Object.keys(aiCache)) {
             if (key.endsWith('_chat') && Array.isArray(aiCache[key])) {
                 chatHistories[key.slice(0, -5)] = aiCache[key];
@@ -12029,6 +12031,74 @@
         const AI_ENDPOINT = 'http://localhost:4142/v1/chat/completions';
         const AI_MODEL = 'gemini-3-flash-preview';
         const AI_KEY = 'your-api-key-here';
+
+        function maskApiKey(key) {
+            if (!key) return '（空）';
+            if (key.length <= 8) return key;
+            return `${key.slice(0, 6)}...${key.slice(-2)}`;
+        }
+
+        function setAITraceState(qid, patch) {
+            const prev = aiTraceState[qid] || {
+                endpoint: AI_ENDPOINT,
+                requestModel: AI_MODEL,
+                keyPreview: maskApiKey(AI_KEY),
+                responseModel: '（尚未回傳）',
+                source: '（尚未請求）',
+                flow: '（尚未使用）',
+                status: 'idle',
+                error: '',
+                updatedAt: ''
+            };
+            const next = {
+                ...prev,
+                ...patch,
+                updatedAt: new Date().toLocaleTimeString('zh-TW', { hour12: false })
+            };
+            aiTraceState[qid] = next;
+            renderAITracePanel(qid);
+        }
+
+        function getAITraceStatusLabel(status) {
+            if (status === 'sending') return '🟡 發送中';
+            if (status === 'success') return '🟢 成功';
+            if (status === 'error') return '🔴 失敗';
+            return '⚪ 尚未送出';
+        }
+
+        function renderAITracePanel(qid) {
+            const box = document.getElementById(`ai-trace-${qid}`);
+            if (!box) return;
+            const state = aiTraceState[qid] || {
+                endpoint: AI_ENDPOINT,
+                requestModel: AI_MODEL,
+                keyPreview: maskApiKey(AI_KEY),
+                responseModel: '（尚未回傳）',
+                source: '（尚未請求）',
+                flow: '（尚未使用）',
+                status: 'idle',
+                error: '',
+                updatedAt: ''
+            };
+
+            const statusLabel = getAITraceStatusLabel(state.status);
+            const errHtml = state.error
+                ? `<div style="margin-top:4px;color:#b42318;">錯誤：${escHtml(state.error)}</div>`
+                : '';
+
+            box.innerHTML = `
+                <div style="font-weight:600; margin-bottom:4px; color:#4c1d95;">🧭 AI 路由資訊（驗證用）</div>
+                <div>狀態：${statusLabel}</div>
+                <div>功能：${escHtml(state.flow)}</div>
+                <div>來源：${escHtml(state.source)}</div>
+                <div>Endpoint：<code>${escHtml(state.endpoint)}</code></div>
+                <div>Request Model：<code>${escHtml(state.requestModel)}</code></div>
+                <div>Response Model：<code>${escHtml(state.responseModel || '（尚未回傳）')}</code></div>
+                <div>Auth Key(預覽)：<code>${escHtml(state.keyPreview)}</code></div>
+                <div>更新時間：${escHtml(state.updatedAt || '（尚無）')}</div>
+                ${errHtml}
+            `;
+        }
 
         // 考試情境設定（用於 AI prompt，可由使用者自訂）
         const DEFAULT_EXAM_CONTEXT = 'GCP Associate Cloud Engineer (ACE)';
@@ -12325,6 +12395,7 @@
                          <details class="ai-section" ${activeExam ? 'style="display:none"' : ''}>
                              <summary>🤖 AI 進階詳解</summary>
                             <div style="padding: 8px 0 4px;">
+                                <div id="ai-trace-${q.id}" style="font-size:12px; line-height:1.5; color:#4b5563; background:#f6f0ff; border:1px solid #e5d5ff; border-radius:8px; padding:8px 10px; margin-bottom:10px;"></div>
                                 ${(aiCache[q.id + '_error'] || aiCache[q.id]) ? `
                                  <div class="ai-content">${formatAIResponse(aiCache[q.id + '_error'] || aiCache[q.id])}</div>
                                  <hr class="ai-section-divider">
@@ -12357,6 +12428,34 @@
             // 渲染已有的對話歷史
             pageQuestions.forEach(q => {
                 if (chatHistories[q.id]?.length > 0) renderChatHistory(q.id);
+                if (!aiTraceState[q.id]) {
+                    if (aiCache[q.id + '_error'] || aiCache[q.id]) {
+                        aiTraceState[q.id] = {
+                            endpoint: AI_ENDPOINT,
+                            requestModel: AI_MODEL,
+                            keyPreview: maskApiKey(AI_KEY),
+                            responseModel: '（快取，未知）',
+                            source: '快取 aiCache',
+                            flow: '❓ 分析我的錯誤',
+                            status: 'success',
+                            error: '',
+                            updatedAt: '（先前回覆）'
+                        };
+                    } else if (chatHistories[q.id]?.length > 0) {
+                        aiTraceState[q.id] = {
+                            endpoint: AI_ENDPOINT,
+                            requestModel: AI_MODEL,
+                            keyPreview: maskApiKey(AI_KEY),
+                            responseModel: '（快取，未知）',
+                            source: '快取 aiCache',
+                            flow: '💬 自由提問',
+                            status: 'success',
+                            error: '',
+                            updatedAt: '（先前回覆）'
+                        };
+                    }
+                }
+                renderAITracePanel(q.id);
             });
         }
 
@@ -12751,6 +12850,13 @@
                 const contentDiv = document.getElementById(`ai-content-${qid}`);
                 const cached = aiCache[cacheKey] || aiCache[qid];
                 if (contentDiv) contentDiv.innerHTML = `<div class="ai-content">${formatAIResponse(cached)}</div>`;
+                setAITraceState(qid, {
+                    flow: '❓ 分析我的錯誤',
+                    status: 'success',
+                    source: '快取 aiCache',
+                    responseModel: aiTraceState[qid]?.responseModel || '（快取，未知）',
+                    error: ''
+                });
                 return;
             }
 
@@ -12758,6 +12864,13 @@
             const contentDiv = document.getElementById(`ai-content-${qid}`);
             if (btn) btn.disabled = true;
             if (contentDiv) contentDiv.innerHTML = '<p class="ai-loading">🤖 AI 分析中，請稍候⋯⋯</p>';
+            setAITraceState(qid, {
+                flow: '❓ 分析我的錯誤',
+                status: 'sending',
+                source: '即時請求',
+                responseModel: '（等待回傳）',
+                error: ''
+            });
 
             // 組建 prompt
             const expParts = [];
@@ -12821,9 +12934,23 @@ ${expText}
                 aiCache[cacheKey] = text;
                 localStorage.setItem('gcp_ai_cache', JSON.stringify(aiCache));
                 if (contentDiv) contentDiv.innerHTML = `<div class="ai-content">${formatAIResponse(text)}</div>`;
+                setAITraceState(qid, {
+                    flow: '❓ 分析我的錯誤',
+                    status: 'success',
+                    source: '即時請求',
+                    responseModel: data.model || '（未提供）',
+                    error: ''
+                });
 
             } catch (err) {
                 if (contentDiv) contentDiv.innerHTML = `<p style="color:#dc3545; font-size:13px;">❌ AI 請求失敗：${escHtml(err.message)}<br><br>請確認 OpenCode 本地服務（<code>localhost:4142</code>）是否在運行中。</p>`;
+                setAITraceState(qid, {
+                    flow: '❓ 分析我的錯誤',
+                    status: 'error',
+                    source: '即時請求',
+                    responseModel: '（失敗）',
+                    error: err.message || '未知錯誤'
+                });
             }
 
             if (btn) btn.disabled = false;
@@ -12930,6 +13057,13 @@ ${expText}
             contentDiv.querySelector('.chat-history')?.appendChild(loadingBubble);
 
             if (btn) btn.disabled = true;
+            setAITraceState(qid, {
+                flow: '💬 自由提問',
+                status: 'sending',
+                source: '即時請求',
+                responseModel: '（等待回傳）',
+                error: ''
+            });
 
             try {
                 const messages = [
@@ -12960,11 +13094,25 @@ ${expText}
                 // 儲存到 aiCache
                 aiCache[qid + '_chat'] = chatHistories[qid];
                 localStorage.setItem('gcp_ai_cache', JSON.stringify(aiCache));
+                setAITraceState(qid, {
+                    flow: '💬 自由提問',
+                    status: 'success',
+                    source: '即時請求',
+                    responseModel: data.model || '（未提供）',
+                    error: ''
+                });
 
             } catch (err) {
                 // 發生錯誤時移除剛才加入的 user 訊息，避免污染歷史
                 chatHistories[qid].pop();
                 chatHistories[qid].push({ role: 'assistant', content: `❌ 請求失敗：${err.message}\n\n請確認 OpenCode 本地服務（localhost:4142）是否在運行中。` });
+                setAITraceState(qid, {
+                    flow: '💬 自由提問',
+                    status: 'error',
+                    source: '即時請求',
+                    responseModel: '（失敗）',
+                    error: err.message || '未知錯誤'
+                });
             }
 
             renderChatHistory(qid);

@@ -97,7 +97,7 @@ const AI_KEY      = 'your-api-key-here';
 | 📝 **Per-question Notes** | Record your reasoning, included in progress backups |
 | 🔍 **Weak-Point Drill** | Click "🔍 弱點練習" button, choose bookmarked/wrong questions (multi-select), hide answers for re-drilling (no timer) |
 | 🎯 **Mock Exam** | Customize questions per session and exam duration; supports 🎲 randomize and 📂 source multi-select (all/bookmarked/wrong can be combined for union pool) |
-| 🤖 **AI Explanation** | Error analysis + multi-turn free Q&A (requires your own AI API) |
+| 🤖 **AI Explanation** | Error analysis + multi-turn free Q&A (requires your own AI API); includes an "AI Routing Info" panel showing endpoint / request model / response model / status |
 | 💬 **Community Discussion** | Formatted display of ExamTopics raw discussion threads |
 | 💾 **Progress Management** | Auto-save to localStorage; export/import single JSON (answers, notes, AI cache, exam history) |
 | 🔍 **Search & Filter** | Filter by content, topic, or completion status |
@@ -314,10 +314,11 @@ then convert the following question data into compatible format and generate the
 
 ## 📅 Version History
 
- **Version: 2.13** | Last Updated: 2026-04-23
+ **Version: 2.14** | Last Updated: 2026-04-27
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.14 | 2026-04-27 | Add "AI Routing Info" panel in AI section (endpoint / request model / response model / status / source), covering both "Analyze My Mistake" and free-chat flows |
 | 2.13 | 2026-04-23 | Rename 🔄 Retry to 🔍 Weak-Point Drill (button/Banner/Modal); mock exam source filter changed to multi-select checkboxes (all/bookmarked/wrong, union pool) |
 | 2.12 | 2026-04-23 | Fix 🔄 retest button not responding (modal class mismatch); ⭐ icon added to "Bookmarked" filter; mock exam adds 🎲 randomize and 📂 source filter (all/bookmarked/wrong) |
 | 2.11 | 2026-04-23 | Retry mode redesign: new "🔄 重考" button + Modal to freely select ⭐ Bookmarked / ❌ Wrong questions; status filter cleaned up with pure "❌ Wrong" filter option |
