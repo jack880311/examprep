@@ -1088,33 +1088,55 @@
                 chatHistories[key.slice(0, -5)] = aiCache[key];
             }
         }
-         // ⚠️ API 設定：從 localStorage 讀取，不存硬碼在檔案中
-         let AI_ENDPOINT = 'http://100.115.60.107:4142/v1/chat/completions';
-         let AI_MODEL = 'gemini-3-flash-preview';
-         let AI_KEY = localStorage.getItem('gcp_ai_key') || '';
+        // ⚠️ AI 設定：從 localStorage 讀取，不存硬碼在檔案中
+        let AI_ENDPOINT = localStorage.getItem('gcp_ai_endpoint') || 'https://api.openai.com/v1/chat/completions';
+        let AI_MODEL = localStorage.getItem('gcp_ai_model') || 'gpt-4o-mini';
+        let AI_KEY = localStorage.getItem('gcp_ai_key') || '';
 
-         // 首次使用或 API key 過期時，提示輸入
-         function ensureAPIKey() {
-             if (!AI_KEY) {
-                 const key = prompt('🔑 首次使用 AI 功能，請輸入你的 API Key:\n\n例如：sk-xxxxxxxx...\n\n(會安全儲存在本機)');
-                 if (key && key.trim()) {
-                     AI_KEY = key.trim();
-                     localStorage.setItem('gcp_ai_key', AI_KEY);
-                     return true;
-                 }
-                 return false;
-             }
-             return true;
-         }
+        function ensureAIConfig() {
+            const needsPrompt = !AI_ENDPOINT || !AI_MODEL || !AI_KEY;
+            if (!needsPrompt) return true;
 
-         // 清除已儲存的 API key（如果需要更新）
-         function clearStoredAPIKey() {
-             if (confirm('確定要清除已儲存的 API Key 嗎？下次使用 AI 時會重新提示輸入。')) {
-                 localStorage.removeItem('gcp_ai_key');
-                 AI_KEY = '';
-                 alert('✓ 已清除');
-             }
-         }
+            const endpointInput = prompt(
+                '🌐 請輸入 AI API Endpoint：\n\n例如：https://api.openai.com/v1/chat/completions\n或 http://你的主機:4142/v1/chat/completions',
+                AI_ENDPOINT || ''
+            );
+            if (!endpointInput || !endpointInput.trim()) return false;
+
+            const modelInput = prompt(
+                '🧠 請輸入模型名稱：\n\n例如：gpt-4o-mini / gemini-3-flash-preview',
+                AI_MODEL || ''
+            );
+            if (!modelInput || !modelInput.trim()) return false;
+
+            const keyInput = prompt(
+                '🔑 請輸入你的 API Key（不會上傳，僅存於本機）：\n\n例如：sk-xxxxxxxx...',
+                ''
+            );
+            if (!keyInput || !keyInput.trim()) return false;
+
+            AI_ENDPOINT = endpointInput.trim();
+            AI_MODEL = modelInput.trim();
+            AI_KEY = keyInput.trim();
+
+            localStorage.setItem('gcp_ai_endpoint', AI_ENDPOINT);
+            localStorage.setItem('gcp_ai_model', AI_MODEL);
+            localStorage.setItem('gcp_ai_key', AI_KEY);
+            return true;
+        }
+
+        // 清除已儲存的 AI 設定（如果需要更新）
+        function clearStoredAIConfig() {
+            if (confirm('確定要清除已儲存的 AI 設定嗎？下次使用 AI 會重新提示輸入。')) {
+                localStorage.removeItem('gcp_ai_endpoint');
+                localStorage.removeItem('gcp_ai_model');
+                localStorage.removeItem('gcp_ai_key');
+                AI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+                AI_MODEL = 'gpt-4o-mini';
+                AI_KEY = '';
+                alert('✓ 已清除');
+            }
+        }
 
         function maskApiKey(key) {
             if (!key) return '（空）';
@@ -1922,9 +1944,9 @@
 
         // 呼叫 AI 進階詳解（錯誤分析）
         async function callAI(qid) {
-            // ⚠️ 檢查 API key 是否已設定
-            if (!ensureAPIKey()) {
-                alert('❌ 未提供 API Key，無法使用 AI 功能');
+            // ⚠️ 檢查 AI 設定
+            if (!ensureAIConfig()) {
+                alert('❌ 尚未完成 AI 設定，無法使用 AI 功能');
                 return;
             }
 
@@ -2091,9 +2113,9 @@ ${expText}
 
         // 呼叫 AI 自由提問（多輪對話）
         async function callAICustom(qid) {
-            // ⚠️ 檢查 API key 是否已設定
-            if (!ensureAPIKey()) {
-                alert('❌ 未提供 API Key，無法使用 AI 功能');
+            // ⚠️ 檢查 AI 設定
+            if (!ensureAIConfig()) {
+                alert('❌ 尚未完成 AI 設定，無法使用 AI 功能');
                 return;
             }
 
