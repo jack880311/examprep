@@ -162,11 +162,6 @@ mobile_css = '''
                 min-width: auto;
             }
             
-            /* 隱藏 AI 考試情境行在超小螢幕 */
-            .controls:nth-of-type(2) {
-                display: none;
-            }
-            
             /* 答案徽章優化 */
             .answer-badge {
                 font-size: 12px;
@@ -194,10 +189,6 @@ mobile_css = '''
                 padding: 12px 14px;
             }
             
-            /* AI 部分隱藏在超小螢幕 */
-            .ai-section {
-                display: none;
-            }
             
             /* 評論區域優化 */
             .comment-item {
