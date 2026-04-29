@@ -235,10 +235,13 @@ mobile_css = '''
         }
 '''
 
-# 在 </head> 前插入 Mobile CSS
-head_close_idx = html.rfind('</head>')
-if head_close_idx != -1:
-    html = html[:head_close_idx] + mobile_css + '\n    ' + html[head_close_idx:]
+style_close_idx = html.rfind('</style>')
+if style_close_idx != -1:
+    html = html[:style_close_idx] + mobile_css + '\n    ' + html[style_close_idx:]
+else:
+    head_close_idx = html.rfind('</head>')
+    if head_close_idx != -1:
+        html = html[:head_close_idx] + '\n<style>' + mobile_css + '</style>\n' + html[head_close_idx:]
 
 # 保存為 index-mobile.html
 with open('index-mobile.html', 'w', encoding='utf-8') as f:
