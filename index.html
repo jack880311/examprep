@@ -727,6 +727,8 @@
                 onkeydown="if(event.key==='Enter') saveExamContext()">
             <button class="btn" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:4px 10px;font-size:12px;border-radius:4px;" onclick="saveExamContext()">儲存</button>
             <span id="examContextSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600; margin-left:4px;">✓</span>
+            <button class="btn" style="background:#3f51b5;color:white;padding:4px 10px;font-size:12px;border-radius:4px;" onclick="openAISettings()">AI 設定</button>
+            <button class="btn" style="background:#9e9e9e;color:white;padding:4px 10px;font-size:12px;border-radius:4px;" onclick="clearStoredAIConfig()">清除 AI</button>
         </div>
 
         <div class="exam-timer-bar" id="examTimerBar">
@@ -896,6 +898,35 @@
             localStorage.setItem('gcp_ai_model', AI_MODEL);
             localStorage.setItem('gcp_ai_key', AI_KEY);
             return true;
+        }
+
+        function openAISettings() {
+            const endpointInput = prompt(
+                '🌐 請輸入 AI API Endpoint：\n\n例如：https://api.openai.com/v1/chat/completions\n或 http://你的主機:4142/v1/chat/completions',
+                AI_ENDPOINT || ''
+            );
+            if (!endpointInput || !endpointInput.trim()) return;
+
+            const modelInput = prompt(
+                '🧠 請輸入模型名稱：\n\n例如：gpt-4o-mini / gemini-3-flash-preview',
+                AI_MODEL || ''
+            );
+            if (!modelInput || !modelInput.trim()) return;
+
+            const keyInput = prompt(
+                '🔑 請輸入你的 API Key（不會上傳，僅存於本機）：\n\n例如：sk-xxxxxxxx...',
+                AI_KEY || ''
+            );
+            if (!keyInput || !keyInput.trim()) return;
+
+            AI_ENDPOINT = endpointInput.trim();
+            AI_MODEL = modelInput.trim();
+            AI_KEY = keyInput.trim();
+
+            localStorage.setItem('gcp_ai_endpoint', AI_ENDPOINT);
+            localStorage.setItem('gcp_ai_model', AI_MODEL);
+            localStorage.setItem('gcp_ai_key', AI_KEY);
+            alert('✅ AI 設定已更新');
         }
 
         // 清除已儲存的 AI 設定（如果需要更新）

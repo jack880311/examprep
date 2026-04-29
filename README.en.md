@@ -111,6 +111,17 @@ If you need to change the settings later, clear the site’s localStorage and yo
 
 ## 🚀 Quick Start
 
+### 📱 Mobile Quick Start (30 seconds)
+
+**Goal: practice on your phone + use AI**
+
+1. Open your mobile browser:
+   - Direct online use (sample question bank): `https://jack880311.github.io/examprep/index-mobile.html`
+   - Your own private question bank: use Option C (Tailscale + local server)
+2. Tap the "🤖 AI" button on any question
+3. First time: a prompt will appear asking for **AI settings** (Endpoint / Model / API Key)
+4. Enter once — settings are remembered automatically from then on
+
 ### Option A: Embedded Version (Recommended — zero setup)
 
 Just **double-click** `index-embedded.html`. No server needed, no installation.
