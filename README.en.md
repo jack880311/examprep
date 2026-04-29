@@ -69,22 +69,27 @@ See the "Replacing with your own question bank" section below for the format.
 
 ---
 
-### 2. AI explanations require your own AI API
+### 2. AI explanations require your own AI API (secure setup)
 
-The "🤖 AI Advanced Explanation" feature calls an **OpenAI-compatible API** (default: `localhost:4142`).
+The "🤖 AI Advanced Explanation" feature calls an **OpenAI-compatible API**.
+
+**Security notes:**
+- ❌ Endpoint / Model / API Key are **never hardcoded** in HTML
+- ✅ On first use, you’ll be prompted to enter **Endpoint / Model / API Key**
+- ✅ These settings are stored **locally in your browser** (localStorage)
 
 **You need one of:**
 - A local LLM proxy (e.g., [LM Studio](https://lmstudio.ai/), [Ollama](https://ollama.ai/), [OpenCode](https://opencode.ai))
-- Or update `AI_ENDPOINT` / `AI_KEY` / `AI_MODEL` in `index.html` to a cloud API (OpenAI, Anthropic, Google, etc.)
+- Or a cloud API (OpenAI, Anthropic, Google, etc.)
 
-```javascript
-// AI settings in index.html (edit as needed)
-const AI_ENDPOINT = 'http://localhost:4142/v1/chat/completions';
-const AI_MODEL    = 'gemini-3-flash-preview';
-const AI_KEY      = 'your-api-key-here';
-```
+**First-time setup flow:**
+1. **API Endpoint** (e.g. `https://api.openai.com/v1/chat/completions`)
+2. **Model** (e.g. `gpt-4o-mini`, `gemini-3-flash-preview`)
+3. **API Key** (e.g. `sk-xxxx...`)
 
-> ℹ️ All other features work fine without an AI API — practice mode, mock exams, notes, weak-point drill. AI explanations are an optional add-on.
+If you need to change the settings later, clear the site’s localStorage and you’ll be prompted again.
+
+> ℹ️ All other features work fine without an AI API — practice mode, mock exams, notes, weak-point drill. AI explanations are optional.
 
 ---
 
@@ -109,6 +114,9 @@ const AI_KEY      = 'your-api-key-here';
 ### Option A: Embedded Version (Recommended — zero setup)
 
 Just **double-click** `index-embedded.html`. No server needed, no installation.
+
+> ⚠️ The embedded version opens as `file://`. AI may still work if your API endpoint is local (e.g. `http://localhost:4142`),
+> but cloud endpoints can be blocked by browser security. If AI fails, use GitHub Pages or server mode instead.
 
 ### Option B: Server Mode (for dynamic JSON updates)
 
