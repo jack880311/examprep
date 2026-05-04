@@ -643,6 +643,13 @@
             padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;
         }
         .btn-exit-exam:hover { background: #333; color: white; }
+        .btn-pause-exam {
+            background: #f0ad00; color: #222; border: none;
+            padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .btn-pause-exam:hover { background: #d49800; }
+        .btn-pause-exam.paused { background: #28a745; color: white; }
+        .btn-pause-exam.paused:hover { background: #1e8035; }
 
         /* 成績結果 */
         .results-header { text-align: center; margin-bottom: 20px; }
@@ -738,6 +745,7 @@
                 <span style="font-size:12px;opacity:0.6;">（正式考試為 50 題 / 2 小時）</span>
             </div>
             <div class="timer-right">
+                <button class="btn-pause-exam" id="btnPauseExam" onclick="togglePauseExam()">⏸ 暫停</button>
                 <button class="btn-submit-exam" onclick="endExam(false)">📊 交卷計算成績</button>
                 <button class="btn-exit-exam" onclick="exitExamWithConfirm()">離開考試</button>
             </div>
@@ -767,6 +775,13 @@
                         </label>
                     </div>
                     <div class="exam-settings-row">
+                        <span class="exam-settings-label">📌 保留答案</span>
+                        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                            <input type="checkbox" id="examKeepAnswers" style="width:15px;height:15px;">
+                            <span>保留先前已作答的答案（可跨場接續計分）</span>
+                        </label>
+                    </div>
+                    <div class="exam-settings-row">
                         <span class="exam-settings-label">📂 題目來源</span>
                         <div style="display:flex;flex-direction:column;gap:6px;">
                             <label style="font-size:13px;cursor:pointer;">
@@ -786,6 +801,18 @@
                     <button class="btn-ai" style="padding:5px 14px; font-size:12px; margin-top:4px;" onclick="applyExamSettings()">套用設定</button>
                     <span id="examSettingsSaved" style="display:none; color:#28a745; font-size:12px; font-weight:600; margin-left:6px;">✓ 已套用，場次已更新</span>
                     <p class="exam-settings-note">⚠️ 修改每場題數後，各場次對應的題目範圍會改變，歷史記錄僅供參考。</p>
+                </div>
+                <div style="background:#f0f4ff;border:1.5px solid #c8d8f8;border-radius:10px;padding:14px 16px;margin-bottom:14px;">
+                    <div style="font-size:13px;font-weight:700;color:#5566cc;margin-bottom:10px;">🔢 自訂題號範圍出題</div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <span style="font-size:13px;color:#444;">從第</span>
+                        <input type="number" id="examRangeFrom" min="1" value="1" style="width:70px;padding:4px 8px;border:1px solid #c8d8f8;border-radius:6px;font-size:13px;text-align:center;">
+                        <span style="font-size:13px;color:#444;">題　到第</span>
+                        <input type="number" id="examRangeTo" min="1" value="60" style="width:70px;padding:4px 8px;border:1px solid #c8d8f8;border-radius:6px;font-size:13px;text-align:center;">
+                        <span style="font-size:13px;color:#444;">題</span>
+                        <button class="btn-ai" style="padding:5px 14px;font-size:12px;" onclick="startCustomRangeExam()">🚀 開始考試</button>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:7px;">依照題目顯示序號（#題號）指定範圍，不受場次限制。考試時間與計時設定同上。</div>
                 </div>
                 <div class="session-grid" id="sessionGrid"></div>
                 <div class="modal-footer">
@@ -2133,13 +2160,56 @@ ${expText}
             document.getElementById('examSourceAll').checked = true;
             document.getElementById('examSourceBookmarked').checked = false;
             document.getElementById('examSourceWrong').checked = false;
+            // 同步自訂範圍預設值
+            const total = allQuestions.length || 60;
+            document.getElementById('examRangeTo').max = total;
+            document.getElementById('examRangeFrom').max = total;
+            if (!document.getElementById('examRangeTo').dataset.userSet) {
+                document.getElementById('examRangeTo').value = Math.min(examSessionSize, total);
+            }
             openExamPickerGrid();
             document.getElementById('examPickerModal').classList.add('visible');
+        }
+
+        function startCustomRangeExam() {
+            const total = allQuestions.length;
+            let from = parseInt(document.getElementById('examRangeFrom').value) || 1;
+            let to   = parseInt(document.getElementById('examRangeTo').value)   || 60;
+            from = Math.max(1, Math.min(from, total));
+            to   = Math.max(from, Math.min(to, total));
+
+            const examQs = allQuestions.slice(from - 1, to);
+            if (examQs.length === 0) { alert('指定範圍內沒有題目。'); return; }
+
+            const inputMins = parseInt(document.getElementById('examDurationInput').value) || 120;
+            const effectiveDuration = Math.max(5, Math.min(300, inputMins)) * 60;
+            examDuration = effectiveDuration;
+            localStorage.setItem('exam_duration_secs', examDuration);
+
+            const keepAnswers = document.getElementById('examKeepAnswers').checked;
+            const keepLabel   = keepAnswers ? '\n📌 保留先前已作答的答案。' : '';
+            const mins = Math.round(examDuration / 60);
+            if (!confirm(`開始自訂範圍考試？\n\n範圍：第 ${from} ～ 第 ${to} 題（共 ${examQs.length} 題）\n計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。${keepLabel}`)) return;
+
+            closeModal('examPickerModal');
+            const rangeSessionId = 0;
+            if (!examSessions.find(s => s.id === rangeSessionId)) {
+                examSessions.push({ id: rangeSessionId, name: `自訂 ${from}～${to} 題`, start: from - 1, end: to - 1 });
+            } else {
+                const s = examSessions.find(s => s.id === rangeSessionId);
+                s.name  = `自訂 ${from}～${to} 題`;
+                s.start = from - 1;
+                s.end   = to - 1;
+            }
+            startExam(rangeSessionId, examQs, `自訂 ${from}～${to} 題`, keepAnswers);
         }
 
         function confirmStartExam(sessionId) {
             const session = examSessions.find(s => s.id === sessionId);
             if (!session) return;
+            const inputMins = parseInt(document.getElementById('examDurationInput').value) || 120;
+            examDuration = Math.max(5, Math.min(300, inputMins)) * 60;
+            localStorage.setItem('exam_duration_secs', examDuration);
             const randomize = document.getElementById('examRandomize').checked;
             const srcAll        = document.getElementById('examSourceAll').checked;
             const srcBookmarked = document.getElementById('examSourceBookmarked').checked;
@@ -2174,13 +2244,15 @@ ${expText}
             if (srcAll || (!srcBookmarked && !srcWrong)) { sourceParts.push('全部題目'); }
             else { if (srcBookmarked) sourceParts.push('⭐ 已標記題'); if (srcWrong) sourceParts.push('❌ 答錯題'); }
             const sourceLabel = sourceParts.join(' + ');
+            const keepAnswers = document.getElementById('examKeepAnswers').checked;
+            const keepLabel   = keepAnswers ? '\n📌 保留先前已作答的答案。' : '';
             const randomLabel = randomize ? '（隨機抽題）' : '';
-            if (!confirm(`開始「${randomize ? '隨機模擬考' : session.name}」？\n\n來源：${sourceLabel}${randomLabel}\n共 ${examQs.length} 題，計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。`)) return;
+            if (!confirm(`開始「${randomize ? '隨機模擬考' : session.name}」？\n\n來源：${sourceLabel}${randomLabel}\n共 ${examQs.length} 題，計時 ${mins} 分鐘。\n進入後題目答案將隱藏，請重新作答。${keepLabel}`)) return;
             closeModal('examPickerModal');
-            startExam(sessionId, examQs, randomize ? '隨機模擬考' : null);
+            startExam(sessionId, examQs, randomize ? '隨機模擬考' : null, keepAnswers);
         }
 
-        function startExam(sessionId, customQs, customName) {
+        function startExam(sessionId, customQs, customName, keepAnswers) {
             const session = examSessions.find(s => s.id === sessionId);
             if (!session) return;
 
@@ -2193,12 +2265,18 @@ ${expText}
                 start: session.start,
                 end: session.end,
                 startTime: Date.now(),
-                remaining: examDuration
+                remaining: examDuration,
+                pausedElapsed: 0,
+                paused: false
             };
 
             retestMode = true;
-            retestRevealed = new Set();
             retestTouched = new Set();
+            if (keepAnswers) {
+                retestRevealed = new Set(questions.filter(q => userProgress[q.id]?.revealed).map(q => q.id));
+            } else {
+                retestRevealed = new Set();
+            }
 
             filteredQuestions = questions;
             currentPage = 1;
@@ -2215,9 +2293,31 @@ ${expText}
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function togglePauseExam() {
+            if (!activeExam) return;
+            const btn = document.getElementById('btnPauseExam');
+            if (activeExam.paused) {
+                activeExam.startTime = Date.now();
+                activeExam.paused = false;
+                btn.textContent = '⏸ 暫停';
+                btn.classList.remove('paused');
+                clearInterval(examTimerInterval);
+                examTimerInterval = setInterval(tickTimer, 1000);
+            } else {
+            const elapsed = activeExam.pausedElapsed + Math.floor((Date.now() - activeExam.startTime) / 1000);
+                activeExam.pausedElapsed += elapsed;
+                activeExam.paused = true;
+                clearInterval(examTimerInterval);
+                btn.textContent = '▶ 繼續';
+                btn.classList.add('paused');
+                const display = document.getElementById('timerDisplay');
+                if (display) display.style.opacity = '0.4';
+            }
+        }
+
         function tickTimer() {
             if (!activeExam) return;
-            const elapsed = Math.floor((Date.now() - activeExam.startTime) / 1000);
+            const elapsed = activeExam.pausedElapsed + Math.floor((Date.now() - activeExam.startTime) / 1000);
             const remaining = Math.max(0, examDuration - elapsed);
             const h = Math.floor(remaining / 3600);
             const m = Math.floor((remaining % 3600) / 60);
@@ -2225,6 +2325,7 @@ ${expText}
             const display = document.getElementById('timerDisplay');
             if (display) {
                 display.textContent = `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                display.style.opacity = '1';
                 display.className = 'timer-display' + (remaining <= EXAM_WARN_5 ? ' danger' : remaining <= EXAM_WARN_30 ? ' warning' : '');
             }
             if (remaining === EXAM_WARN_30) alert('⏰ 還剩 30 分鐘！');
@@ -2273,6 +2374,8 @@ ${expText}
             localStorage.setItem('gcp_exam_history', JSON.stringify(examHistory));
 
             document.getElementById('examTimerBar').classList.remove('visible');
+            const pauseBtn = document.getElementById('btnPauseExam');
+            if (pauseBtn) { pauseBtn.textContent = '⏸ 暫停'; pauseBtn.classList.remove('paused'); }
             retestMode = false;
             retestRevealed = new Set();
             retestTouched = new Set();
@@ -2380,6 +2483,8 @@ ${expText}
             if (activeExam) {
                 clearInterval(examTimerInterval);
                 document.getElementById('examTimerBar').classList.remove('visible');
+                const pauseBtn = document.getElementById('btnPauseExam');
+                if (pauseBtn) { pauseBtn.textContent = '⏸ 暫停'; pauseBtn.classList.remove('paused'); }
                 activeExam = null;
             }
             filteredQuestions = retestQs;
@@ -2407,6 +2512,8 @@ ${expText}
             if (!confirm('確定要離開考試嗎？計時將停止，本場不計入成績。')) return;
             clearInterval(examTimerInterval);
             document.getElementById('examTimerBar').classList.remove('visible');
+            const pauseBtn = document.getElementById('btnPauseExam');
+            if (pauseBtn) { pauseBtn.textContent = '⏸ 暫停'; pauseBtn.classList.remove('paused'); }
             retestMode = false;
             retestRevealed = new Set();
             activeExam = null;
