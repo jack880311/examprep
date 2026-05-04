@@ -1109,9 +1109,9 @@
             }
         }
         // ⚠️ AI 設定：從 localStorage 讀取，不存硬碼在檔案中
-        let AI_ENDPOINT = localStorage.getItem('gcp_ai_endpoint') || 'https://api.openai.com/v1/chat/completions';
-        let AI_MODEL = localStorage.getItem('gcp_ai_model') || 'gpt-4o-mini';
-        let AI_KEY = localStorage.getItem('gcp_ai_key') || '';
+        let AI_ENDPOINT = localStorage.getItem('gcp_ai_endpoint') || 'http://localhost:4142/v1/chat/completions';
+        let AI_MODEL = localStorage.getItem('gcp_ai_model') || 'gemini-3-flash-preview';
+        let AI_KEY = localStorage.getItem('gcp_ai_key') || 'sk-local';
 
         function ensureAIConfig() {
             const needsPrompt = !AI_ENDPOINT || !AI_MODEL || !AI_KEY;
